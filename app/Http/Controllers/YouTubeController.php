@@ -27,20 +27,24 @@ class YouTubeController extends Controller
 
         $videos = $data['items'] ?? [];
 
-        // STEP 2: extract video IDs
-        $videoIds = collect($videos)->pluck('id.videoId')->filter()->implode(',');
+        // Extract video IDs
+        $videoIds = collect($videos)
+            ->pluck('id.videoId')
+            ->filter()
+            ->implode(',');
 
-        // STEP 3: get details (views, stats, etc.)
+        // Get video statistics
         $statsResponse = Http::get('https://www.googleapis.com/youtube/v3/videos', [
-            'part' => 'statistics, snippet',
+            'part' => 'statistics,snippet',
             'id' => $videoIds,
             'key' => $apiKey
         ]);
 
         $statsData = $statsResponse->json()['items'] ?? [];
 
-        // map stats by video id
+        // Map stats by video ID
         $videoStats = [];
+
         foreach ($statsData as $item) {
             $videoStats[$item['id']] = $item;
         }
@@ -51,6 +55,43 @@ class YouTubeController extends Controller
             'search' => $search,
             'platform' => 'YouTube',
             'totalVideos' => $data['pageInfo']['totalResults'] ?? 0,
+            'nextPageToken' => $data['nextPageToken'] ?? null,
+            'prevPageToken' => $data['prevPageToken'] ?? null
+        ]);
+    }
+
+    public function watch($id)
+    {
+        $apiKey = env('YOUTUBE_API_KEY');
+
+        $pageToken = request('pageToken');
+
+        // Get comments
+        $response = Http::get('https://www.googleapis.com/youtube/v3/commentThreads', [
+            'part' => 'snippet',
+            'videoId' => $id,
+            'maxResults' => 100,
+            'pageToken' => $pageToken,
+            'key' => $apiKey
+        ]);
+
+        $data = $response->json();
+
+        $comments = $data['items'] ?? [];
+
+        // Get video details
+        $videoResponse = Http::get('https://www.googleapis.com/youtube/v3/videos', [
+            'part' => 'snippet,statistics',
+            'id' => $id,
+            'key' => $apiKey
+        ]);
+
+        $videoData = $videoResponse->json()['items'][0] ?? null;
+
+        return view('watch_youtube', [
+            'id' => $id,
+            'comments' => $comments,
+            'video' => $videoData,
             'nextPageToken' => $data['nextPageToken'] ?? null,
             'prevPageToken' => $data['prevPageToken'] ?? null
         ]);
