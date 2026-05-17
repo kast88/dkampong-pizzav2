@@ -16,10 +16,6 @@ Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])-
 
 Route::middleware('session.auth')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\LoginController::class, 'dashboard'])->name('dashboard');
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard');
-    // })->name('dashboard');
-
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 // Reddit routes
