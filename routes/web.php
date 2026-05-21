@@ -24,5 +24,4 @@ Route::get('/reddit', [RedditController::class, 'index']);
 Route::get('/watch_reddit/{id}', [RedditController::class, 'show']);
 
 // Blogger routes
-Route::get('/blogger', [BloggerController::class, 'index']);
-Route::get('/watch_blogger/{id}', [BloggerController::class, 'show']);
+Route::get('/blogger', [BloggerController::class, 'index'])->name('blog.index');;

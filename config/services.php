@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'blogger' => [
+        'key' => env('BLOGGER_API_KEY'),
+    ],
+
 ];

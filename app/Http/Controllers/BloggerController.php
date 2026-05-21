@@ -2,27 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\BloggerService;
+use Illuminate\Http\Request;
 
 class BloggerController extends Controller
 {
     public function index(Request $request, BloggerService $blogger)
     {
-        $url = $request->get('url', 'https://draftsfromcoffeetable.blogspot.com//');
-        $blog = $blogger->getBlogByUrl($url);
+        $url = trim($request->get('url', 'https://pizzaioli.blogspot.com/'));
+        $pageToken = $request->get('pageToken');
+        $tokenHistory = array_values(array_filter(explode(',', $request->get('history', ''))));
 
+        $blog = $blogger->getBlogByUrl($url);
         $blogId = $blog['id'] ?? null;
 
-        if (! $blogId) {
-            return response()->json(['error' => 'Blog not found'], 404);
+        abort_unless($blogId, 404, 'Blog not found');
+
+        $response = $blogger->getPostsByBlogId($blogId, [
+            'maxResults' => 6,
+            'pageToken' => $pageToken,
+            'fetchBodies' => true,
+        ]);
+
+        $posts = collect($response['items'] ?? []);
+        $nextPageToken = $response['nextPageToken'] ?? null;
+
+        $previousToken = null;
+        $previousHistory = $tokenHistory;
+
+        if (!empty($tokenHistory)) {
+            $previousToken = array_pop($previousHistory);
         }
 
-        $posts = $blogger->getPostsByBlogId($blogId);
-        \Log::debug('BloggerController@index', ['blog' => $blog, 'posts' => $posts]);
-        return response()->json([
+        $nextHistory = $tokenHistory;
+        if ($pageToken) {
+            $nextHistory[] = $pageToken;
+        }
+
+        return view('blog.index', [
             'blog' => $blog,
-            'posts' => $posts['items'] ?? [],
+            'posts' => $posts,
+            'nextPageToken' => $nextPageToken,
+            'previousToken' => $previousToken,
+            'nextHistory' => implode(',', $nextHistory),
+            'previousHistory' => implode(',', $previousHistory),
+            'currentUrl' => $url,
         ]);
     }
 }
