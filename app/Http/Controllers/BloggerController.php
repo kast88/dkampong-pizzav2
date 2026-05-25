@@ -9,7 +9,7 @@ class BloggerController extends Controller
 {
     public function index(Request $request, BloggerService $blogger)
     {
-        $url = trim($request->get('url', 'https://pizzaioli.blogspot.com/'));
+        $url = trim($request->get('url', 'https://dkampong-pizza.blogspot.com/'));
         $pageToken = $request->get('pageToken');
         $tokenHistory = array_values(array_filter(explode(',', $request->get('history', ''))));
 
@@ -38,6 +38,8 @@ class BloggerController extends Controller
         if ($pageToken) {
             $nextHistory[] = $pageToken;
         }
+
+        $youtubeData = $this->getYouTubeData();
 
         return view('blog.index', [
             'blog' => $blog,

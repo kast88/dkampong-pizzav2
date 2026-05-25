@@ -3,16 +3,20 @@
 @section('content')
 @php
     $name = $user['name'] ?? 'Admin';
-    $youtubeSnippet = $youtubeVideo['snippet'] ?? [];
-    $youtubeStats = $youtubeVideo['statistics'] ?? [];
-
+    
+    // YouTube data
+    $youtubeVideos = $youtubeVideos ?? collect([]);
+    $firstVideo = $youtubeVideos->first();
+    $youtubeSnippet = $firstVideo['video']['snippet'] ?? [];
+    $youtubeStats = $firstVideo['video']['statistics'] ?? [];
+    
     $ytTitle = $youtubeSnippet['title'] ?? 'No YouTube video loaded';
     $ytChannel = $youtubeSnippet['channelTitle'] ?? 'Unknown Channel';
     $ytViews = (int) ($youtubeStats['viewCount'] ?? 0);
     $ytLikes = (int) ($youtubeStats['likeCount'] ?? 0);
     $ytCommentsTotal = (int) ($youtubeStats['commentCount'] ?? 0);
-    $ytPublished = $youtubeSnippet['publishedAt'] ?? null;
-
+    
+    // Reddit data
     $redditTitle = $redditPost['title'] ?? 'No Reddit post loaded';
     $redditSubreddit = $redditPost['subreddit'] ?? 'Unknown subreddit';
     $redditAuthor = $redditPost['author'] ?? 'Unknown author';
@@ -20,8 +24,22 @@
     $redditCommentsTotal = (int) ($redditPost['comments'] ?? count($redditComments ?? []));
     $redditUrl = isset($redditPost['url']) ? 'https://reddit.com' . $redditPost['url'] : '#';
 
-    $youtubeComments = $youtubeComments ?? [];
     $redditComments = $redditComments ?? [];
+    
+    // Blog defaults
+    $blog = $blog ?? [];
+    $posts = $posts ?? collect([]);
+    
+    // Calculate blog statistics
+    $blogTotalPosts = $blog['posts']['totalItems'] ?? $posts->count();
+    $blogTotalComments = 0;
+    
+    foreach ($posts as $post) {
+        $blogTotalComments += $post['replies']['totalItems'] ?? 0;
+    }
+    
+    $blogAvgCommentsPerPost = $posts->count() > 0 ? round($blogTotalComments / $posts->count(), 1) : 0;
+    $blogEngagement = $blogTotalPosts > 0 ? round(($blogTotalComments / $blogTotalPosts) * 100, 2) : 0;
 
     $ytEngagement = $ytViews > 0 ? round((($ytLikes + $ytCommentsTotal) / $ytViews) * 100, 2) : 0;
 
@@ -39,6 +57,9 @@
 
     $redditChartLabels = ['Upvotes', 'Comments', 'Avg Comment Length'];
     $redditChartValues = [$redditUps, $redditCommentsTotal, $redditAvgCommentLength];
+                        
+    use App\Support\SessionUser;
+    $isLoggedIn = SessionUser::check();
 @endphp
 
 <div class="min-h-screen bg-zinc-950 text-zinc-100">
@@ -61,14 +82,6 @@
                     <span>📊</span>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 rounded-xl px-4 py-3 text-zinc-300 transition hover:bg-white/5 hover:text-white">
-                    <span>▶️</span>
-                    <span>YouTube Watch</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 rounded-xl px-4 py-3 text-zinc-300 transition hover:bg-white/5 hover:text-white">
-                    <span>🧡</span>
-                    <span>Reddit Watch</span>
-                </a>
             </nav>
 
             <div class="border-t border-white/10 p-4">
@@ -85,181 +98,118 @@
                 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                         <p class="text-sm uppercase tracking-[0.2em] text-orange-400">D'Kampong Analytics</p>
-                        <h1 class="mt-1 text-3xl font-bold text-white">YouTube & Reddit Dashboard</h1>
+                        <h1 class="mt-1 text-3xl font-bold text-white">Social Media Platform Dashboard</h1>
                         <p class="mt-1 text-sm text-zinc-400">Track social engagement and community response in one place.</p>
                     </div>
-
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="rounded-xl bg-gradient-to-r from-red-500 to-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-red-950/30 transition hover:opacity-90">
-                            Logout
-                        </button>
-                    </form>
+                    @if($isLoggedIn)
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="rounded-xl bg-gradient-to-r from-red-500 to-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-red-950/30 transition hover:opacity-90">
+                                Logout
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}">
+                            <button class="rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-950/30 transition hover:opacity-90">
+                                Login
+                            </button>
+                        </a>
+                    @endif
                 </div>
             </header>
 
             <div class="space-y-6 p-6">
-                <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <div class="rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/15 to-red-500/10 p-5">
-                        <p class="text-sm text-zinc-300">YouTube Views</p>
-                        <h2 class="mt-3 text-3xl font-bold text-white">{{ number_format($ytViews) }}</h2>
-                        <p class="mt-2 text-sm text-zinc-400">{{ $ytChannel }}</p>
-                    </div>
-
-                    <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-                        <p class="text-sm text-zinc-400">YouTube Engagement</p>
-                        <h2 class="mt-3 text-3xl font-bold text-white">{{ $ytEngagement }}%</h2>
-                        <p class="mt-2 text-sm text-zinc-400">{{ number_format($ytLikes) }} likes + {{ number_format($ytCommentsTotal) }} comments</p>
-                    </div>
-
-                    <div class="rounded-3xl border border-red-500/20 bg-red-500/10 p-5">
-                        <p class="text-sm text-zinc-300">Reddit Upvotes</p>
-                        <h2 class="mt-3 text-3xl font-bold text-white">{{ number_format($redditUps) }}</h2>
-                        <p class="mt-2 text-sm text-zinc-400">r/{{ $redditSubreddit }}</p>
-                    </div>
-
-                    <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-                        <p class="text-sm text-zinc-400">Avg Reddit Comment Length</p>
-                        <h2 class="mt-3 text-3xl font-bold text-white">{{ number_format($redditAvgCommentLength) }}</h2>
-                        <p class="mt-2 text-sm text-zinc-400">{{ number_format($redditCommentsTotal) }} comments analysed</p>
-                    </div>
-                </section>
-
-                <section class="grid gap-6 xl:grid-cols-2">
-                    <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-                        <div class="mb-5">
-                            <h3 class="text-xl font-semibold text-white">YouTube Analytics</h3>
-                            <p class="text-sm text-zinc-400">Views, likes, and comments from the selected video</p>
-                        </div>
-                        <div class="h-80">
-                            <canvas id="youtubeChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-                        <div class="mb-5">
-                            <h3 class="text-xl font-semibold text-white">Reddit Analytics</h3>
-                            <p class="text-sm text-zinc-400">Upvotes, comments, and average comment length</p>
-                        </div>
-                        <div class="h-80">
-                            <canvas id="redditChart"></canvas>
-                        </div>
-                    </div>
-                </section>
 
                 <section class="rounded-3xl border border-white/10 bg-white/5 p-3">
                     <div class="flex flex-wrap gap-3">
                         <button type="button" class="media-tab-btn rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 px-5 py-3 text-sm font-semibold text-white" data-tab="youtube">
-                            YouTube
+                            ▶️ YouTube
                         </button>
-                        <button type="button" class="media-tab-btn rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-200" data-tab="reddit">
-                            Reddit
+                        <button type="button" class="media-tab-btn rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/10" data-tab="reddit">
+                            🧡 Reddit
+                        </button>
+                        <button type="button" class="media-tab-btn rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/10" data-tab="blog">
+                            📖 Blog
                         </button>
                     </div>
                 </section>
 
                 <section id="tab-youtube" class="media-tab-panel space-y-6">
-                    <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-                        <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                            <div>
-                                <p class="text-sm uppercase tracking-wide text-orange-400">YouTube Video</p>
-                                <h2 class="mt-2 text-2xl font-bold text-white">{{ $ytTitle }}</h2>
-                                <div class="mt-3 flex flex-wrap gap-4 text-sm text-zinc-400">
-                                    <span>Channel: {{ $ytChannel }}</span>
-                                    <span>Views: {{ number_format($ytViews) }}</span>
-                                    <span>Likes: {{ number_format($ytLikes) }}</span>
-                                    <span>Comments: {{ number_format($ytCommentsTotal) }}</span>
-                                </div>
-                            </div>
-
-                            @if(!empty($youtubeVideo['id']))
-                                <a href="https://youtube.com/watch?v={{ $youtubeVideo['id'] }}" target="_blank" class="rounded-2xl bg-red-500 px-4 py-3 text-sm font-semibold text-white hover:bg-red-600">
-                                    Open in YouTube
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-                        <div class="mb-4 flex items-center justify-between">
-                            <h3 class="text-xl font-semibold text-white">YouTube Comments</h3>
-                            <span class="rounded-full bg-orange-500/15 px-3 py-1 text-xs text-orange-300">{{ number_format($ytCommentsTotal) }}</span>
-                        </div>
-
-                        <div class="space-y-4">
-                            @forelse($youtubeComments as $comment)
-                                @php
-                                    $snippet = $comment['snippet']['topLevelComment']['snippet'] ?? [];
-                                    $author = $snippet['authorDisplayName'] ?? 'Unknown User';
-                                    $text = $snippet['textDisplay'] ?? '';
-                                @endphp
-
-                                <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                                    <p class="font-semibold text-white">{{ $author }}</p>
-                                    <div class="mt-2 text-sm leading-7 text-zinc-300">{!! $text !!}</div>
-                                </div>
-                            @empty
-                                <div class="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-sm text-zinc-400">
-                                    No YouTube comments available.
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
+                    @include('youtube_dashboard')
                 </section>
 
                 <section id="tab-reddit" class="media-tab-panel hidden space-y-6">
-                    <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-                        <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                            <div>
-                                <p class="text-sm uppercase tracking-wide text-red-400">Reddit Post</p>
-                                <h2 class="mt-2 text-2xl font-bold text-white">{{ $redditTitle }}</h2>
-                                <div class="mt-3 flex flex-wrap gap-4 text-sm text-zinc-400">
-                                    <span>Subreddit: r/{{ $redditSubreddit }}</span>
-                                    <span>Author: {{ $redditAuthor }}</span>
-                                    <span>Upvotes: {{ number_format($redditUps) }}</span>
-                                    <span>Comments: {{ number_format($redditCommentsTotal) }}</span>
-                                </div>
-                            </div>
+                    @include('reddit_dashboard')
+                </section>
 
-                            <a href="{{ $redditUrl }}" target="_blank" class="rounded-2xl bg-orange-500 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-600">
-                                Open in Reddit
-                            </a>
+                <section id="tab-blog" class="media-tab-panel hidden space-y-6">
+                    @if(!empty($blog))
+                        <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+                            <div>
+                                <p class="text-sm uppercase tracking-wide text-orange-400">Blog</p>
+                                <h2 class="mt-2 text-2xl font-bold text-white">{{ $blog['name'] ?? 'Blog' }}</h2>
+                                <p class="mt-3 max-w-2xl text-sm leading-7 text-zinc-400">{{ $blog['description'] ?? 'A collection of thoughtful posts and stories.' }}</p>
+                                @if(!empty($blog['url']))
+                                    <a href="{{ $blog['url'] }}" target="_blank" class="mt-4 inline-block rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
+                                        Visit Blog
+                                    </a>
+                                @endif
+                            </div>
                         </div>
 
-                        @if(!empty($redditPost['selftext']))
-                            <div class="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm leading-7 text-zinc-300 whitespace-pre-wrap">
-                                {{ $redditPost['selftext'] }}
+                        @if(!empty($posts) && $posts->count())
+                            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+                                <div class="mb-6 flex items-center justify-between">
+                                    <h3 class="text-xl font-semibold text-white">Recent Posts</h3>
+                                    <span class="rounded-full bg-orange-500/15 px-3 py-1 text-xs text-orange-300">{{ $posts->count() }} posts</span>
+                                </div>
+
+                                <div class="space-y-4">
+                                    @foreach($posts as $post)
+                                        <div class="group rounded-2xl border border-white/10 bg-black/20 p-5 transition hover:border-orange-500/30 hover:bg-black/30">
+                                            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                                <div class="flex-1">
+                                                    <h4 class="font-semibold text-white group-hover:text-orange-300">
+                                                        {{ $post['title'] ?? 'Untitled Post' }}
+                                                    </h4>
+                                                    <p class="mt-2 text-sm text-zinc-400">
+                                                        {{ \Illuminate\Support\Str::limit(strip_tags($post['content'] ?? ''), 150) }}
+                                                    </p>
+                                                    <div class="mt-3 flex flex-wrap gap-2">
+                                                        @if(!empty($post['labels']))
+                                                            @foreach(array_slice($post['labels'], 0, 3) as $label)
+                                                                <span class="rounded-full bg-orange-500/10 px-2 py-1 text-xs text-orange-300">
+                                                                    {{ $label }}
+                                                                </span>
+                                                            @endforeach
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-col items-start gap-2 sm:items-end sm:text-right">
+                                                    <span class="text-xs text-zinc-500">
+                                                        {{ !empty($post['published']) ? \Carbon\Carbon::parse($post['published'])->format('d M Y') : '-' }}
+                                                    </span>
+                                                    @if(isset($post['replies']['totalItems']))
+                                                        <span class="text-xs text-zinc-400">
+                                                            💬 {{ $post['replies']['totalItems'] }} comments
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @else
+                            <div class="rounded-3xl border border-dashed border-white/10 bg-white/5 p-12 text-center">
+                                <p class="text-sm text-zinc-400">No blog posts available at this time.</p>
                             </div>
                         @endif
-                    </div>
-
-                    <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-                        <div class="mb-4 flex items-center justify-between">
-                            <h3 class="text-xl font-semibold text-white">Reddit Comments</h3>
-                            <span class="rounded-full bg-red-500/15 px-3 py-1 text-xs text-red-300">{{ number_format($redditCommentsTotal) }}</span>
+                    @else
+                        <div class="rounded-3xl border border-dashed border-white/10 bg-white/5 p-12 text-center">
+                            <p class="text-sm text-zinc-400">Blog data not loaded. Please configure your blog settings.</p>
                         </div>
-
-                        <div class="space-y-4">
-                            @forelse($redditComments as $comment)
-                                @php
-                                    $data = $comment['data'] ?? [];
-                                    $author = $data['author'] ?? 'Unknown User';
-                                    $body = $data['body'] ?? null;
-                                @endphp
-
-                                @if($body)
-                                    <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                                        <p class="font-semibold text-white">{{ $author }}</p>
-                                        <div class="mt-2 whitespace-pre-wrap text-sm leading-7 text-zinc-300">{{ $body }}</div>
-                                    </div>
-                                @endif
-                            @empty
-                                <div class="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-sm text-zinc-400">
-                                    No Reddit comments available.
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
+                    @endif
                 </section>
             </div>
         </main>
@@ -273,58 +223,65 @@
     const redditLabels = @json($redditChartLabels);
     const redditValues = @json($redditChartValues);
 
-    new Chart(document.getElementById('youtubeChart'), {
-        type: 'bar',
-        data: {
-            labels: youtubeLabels,
-            datasets: [{
-                label: 'YouTube Metrics',
-                data: youtubeValues,
-                backgroundColor: ['#f97316', '#ef4444', '#fb923c'],
-                borderRadius: 12
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: { ticks: { color: '#d4d4d8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                y: { ticks: { color: '#d4d4d8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-            }
-        }
-    });
+    const youtubeChartElement = document.getElementById('youtubeChart');
+    const redditChartElement = document.getElementById('redditChart');
 
-    new Chart(document.getElementById('redditChart'), {
-        type: 'line',
-        data: {
-            labels: redditLabels,
-            datasets: [{
-                label: 'Reddit Metrics',
-                data: redditValues,
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(249,115,22,0.2)',
-                fill: true,
-                tension: 0.35,
-                pointBackgroundColor: '#f97316',
-                pointBorderColor: '#fff',
-                pointRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
+    if (youtubeChartElement) {
+        new Chart(youtubeChartElement, {
+            type: 'bar',
+            data: {
+                labels: youtubeLabels,
+                datasets: [{
+                    label: 'YouTube Metrics',
+                    data: youtubeValues,
+                    backgroundColor: ['#f97316', '#ef4444', '#fb923c'],
+                    borderRadius: 12
+                }]
             },
-            scales: {
-                x: { ticks: { color: '#d4d4d8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                y: { ticks: { color: '#d4d4d8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { ticks: { color: '#d4d4d8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#d4d4d8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
             }
-        }
-    });
+        });
+    }
+
+    if (redditChartElement) {
+        new Chart(redditChartElement, {
+            type: 'line',
+            data: {
+                labels: redditLabels,
+                datasets: [{
+                    label: 'Reddit Metrics',
+                    data: redditValues,
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(249,115,22,0.2)',
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#f97316',
+                    pointBorderColor: '#fff',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { ticks: { color: '#d4d4d8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#d4d4d8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
+    }
 
     const tabButtons = document.querySelectorAll('.media-tab-btn');
     const tabPanels = document.querySelectorAll('.media-tab-panel');
