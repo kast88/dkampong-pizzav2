@@ -295,7 +295,7 @@ class LoginController extends Controller
         $children = $data['data']['children'] ?? [];
 
         if (empty($children)) {
-            return view('reddit', [
+            return [
                 'posts' => [],
                 'postStats' => [],
                 'search' => $search,
@@ -308,7 +308,7 @@ class LoginController extends Controller
                 'chartUps' => [],
                 'chartComments' => [],
                 'chartEngagement' => [],
-            ]);
+            ];
         }
 
         $postsData = [];
