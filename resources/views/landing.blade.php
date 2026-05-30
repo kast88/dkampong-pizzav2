@@ -9,7 +9,7 @@
                 🍕 D'Kampong Pizza
             </div>
             <a href="{{ route('login') }}" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition">
-                Admin Login
+                Login
             </a>
         </div>
     </nav>
@@ -206,7 +206,7 @@
 
             <!-- Menu Items Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 menu-items-container">
-                
+
                 <!-- Classic Pizzas -->
                 <div class="menu-item all classic group">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
@@ -471,7 +471,7 @@
                 // Remove active class from all buttons
                 filterBtns.forEach(b => b.classList.remove('active', 'border-orange-500', 'bg-orange-500/20', 'text-orange-400'));
                 filterBtns.forEach(b => b.classList.add('border-zinc-600', 'text-zinc-300'));
-                
+
                 // Add active class to clicked button
                 this.classList.add('active', 'border-orange-500', 'bg-orange-500/20', 'text-orange-400');
                 this.classList.remove('border-zinc-600', 'text-zinc-300');

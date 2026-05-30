@@ -9,18 +9,18 @@ use App\Http\Controllers\BloggerController;
 
 // Route::get('/', [YouTubeController::class, 'index']);
 
-Route::view('/landing', 'landing')->name('landing');
+Route::view('/', 'landing')->name('landing');
 
 Route::post('/login', [App\Http\Controllers\LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
 
-Route::get('/', [App\Http\Controllers\LoginController::class, 'dashboard'])->name('dashboard');
+// Route::get('/', [App\Http\Controllers\LoginController::class, 'dashboard'])->name('dashboard');
 Route::get('/login-admin', [App\Http\Controllers\LoginController::class, 'showLoginForm'])->name('login');
 Route::middleware('session.auth')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\LoginController::class, 'dashboard'])->name('dashboard');
     // Route::get('/', [YouTubeController::class, 'index']);
     Route::get('/watch_youtube/{id}', [YouTubeController::class, 'watch']);
-    
+
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     // Reddit routes

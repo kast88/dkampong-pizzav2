@@ -159,11 +159,17 @@
                 datasets: [{
                     label: 'Engagement %',
                     data: engagementData,
-                    borderColor: '#0f172a',
-                    backgroundColor: '#0f172a',
-                    tension: 0.35,
-                    fill: false,
-                }],
+                    borderColor: '#f97316', // Orange
+                    backgroundColor: 'rgba(249, 115, 22, 0.15)',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#f97316',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    tension: 0.4,
+                    fill: true,
+                }]
             },
             options: {
                 responsive: true,
