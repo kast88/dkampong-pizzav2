@@ -9,6 +9,7 @@ use App\Http\Controllers\BloggerController;
 
 // Route::get('/', [YouTubeController::class, 'index']);
 
+Route::view('/landing', 'landing')->name('landing');
 
 Route::post('/login', [App\Http\Controllers\LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
