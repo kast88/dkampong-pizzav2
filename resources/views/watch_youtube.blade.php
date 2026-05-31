@@ -299,7 +299,7 @@
             <div class="actions">
 
                 <a href="/" class="btn back-btn">
-                    ← Back Dashboard
+                    ← Back to Homepage
                 </a>
 
                 <a href="https://youtube.com/watch?v={{ $id }}"

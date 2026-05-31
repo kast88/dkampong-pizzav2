@@ -40,7 +40,7 @@
 
         <div class="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
             <div class="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-orange-100 bg-white/90 shadow-2xl shadow-black/10 backdrop-blur xl:grid-cols-2">
-                
+
                 <!-- Left side / branding -->
                 <div class="hidden xl:flex flex-col justify-between bg-gradient-to-br from-neutral-950 via-neutral-900 to-orange-950 px-10 py-12 text-white">
                     <div>
@@ -172,6 +172,13 @@
                             >
                                 Login
                             </button>
+
+                            <a
+                                href="{{ url('/') }}"
+                                class="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm font-semibold text-neutral-700 shadow-sm transition hover:border-orange-500 hover:bg-orange-50 hover:text-orange-600"
+                            >
+                                Back to Homepage
+                            </a>
                         </form>
                     </div>
                 </div>

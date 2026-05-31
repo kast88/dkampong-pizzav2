@@ -2,63 +2,108 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
 class LandingPageController extends Controller
 {
     public function index()
     {
-        $youtubeVideos = Cache::remember('malaysia_pizza_videos', 60 * 60 * 24, function () {
-            return [
-                [
-                    'id' => 'DuoNazxezkM',
-                    'title' => 'BIZ MALAYSIA - PIZZA KAMPUNG MENJADI PERHATIAN [19 OGOS 2016]',
-                    'thumbnail' => 'https://img.youtube.com/vi/DuoNazxezkM/hqdefault.jpg',
-                    'channel' => 'Berita RTM',
-                ],
-                [
-                    'id' => 'T6O3UqRTRgU',
-                    'title' => '9 JUN 2023 – SPM – KISAH RAKYAT MALAYSIA – PIZZA KAMPUNG',
-                    'thumbnail' => 'https://img.youtube.com/vi/T6O3UqRTRgU/hqdefault.jpg',
-                    'channel' => 'Berita RTM',
-                ],
-                [
-                    'id' => 'v0YB0UB8TNU',
-                    'title' => 'Jualan pizza kampung naik dibantu media sosial',
-                    'thumbnail' => 'https://img.youtube.com/vi/v0YB0UB8TNU/hqdefault.jpg',
-                    'channel' => 'Astro AWANI',
-                ],
-            ];
+        $youtubeVideos = Cache::remember('youtube_pizza_full_3', now()->addHours(6), function () {
+
+            $apiKey = env('YOUTUBE_API_KEY');
+
+            // STEP 1: SEARCH VIDEOS (get IDs)
+            $searchResponse = Http::get('https://www.googleapis.com/youtube/v3/search', [
+                'part' => 'snippet',
+                'q' => 'pizza kampung malaysia',
+                'type' => 'video',
+                'maxResults' => 3,
+                'order' => 'relevance',
+                'key' => $apiKey,
+            ]);
+
+            if (!$searchResponse->successful()) {
+                return [];
+            }
+
+            $videoIds = collect($searchResponse->json('items'))
+                ->pluck('id.videoId')
+                ->filter()
+                ->implode(',');
+
+            if (!$videoIds) {
+                return [];
+            }
+
+            // STEP 2: GET STATS (likes/views/comments)
+            $videoResponse = Http::get('https://www.googleapis.com/youtube/v3/videos', [
+                'part' => 'snippet,statistics,contentDetails',
+                'id' => $videoIds,
+                'key' => $apiKey,
+            ]);
+
+            if (!$videoResponse->successful()) {
+                return [];
+            }
+
+            return collect($videoResponse->json('items'))->map(function ($video) {
+
+                return [
+                    'id' => $video['id'],
+
+                    'title' => $video['snippet']['title'],
+
+                    'channel' => $video['snippet']['channelTitle'],
+
+                    // 🔥 real YouTube thumbnail (best quality)
+                    'thumbnail' =>
+                        $video['snippet']['thumbnails']['maxres']['url']
+                        ?? $video['snippet']['thumbnails']['standard']['url']
+                        ?? $video['snippet']['thumbnails']['high']['url']
+                        ?? $video['snippet']['thumbnails']['medium']['url']
+                        ?? '',
+
+                    // 🔥 stats
+                    'views' => $video['statistics']['viewCount'] ?? 0,
+                    'likes' => $video['statistics']['likeCount'] ?? null,
+                    'comments' => $video['statistics']['commentCount'] ?? 0,
+
+                    // optional YouTube link
+                    'url' => 'https://www.youtube.com/watch?v=' . $video['id'],
+                ];
+
+            })->values()->toArray();
         });
 
         $redditReviews = [
             [
                 'user' => 'foodie_my',
-                'title' => 'Best kampung-style pizza I’ve ever had in Malaysia',
-                'text' => 'The sambal pizza is honestly next level. Didn’t expect it to work but it does 🔥',
+                'title' => 'Best Kampung Pizza in Malaysia',
+                'text' => 'Crazy good sambal pizza, unexpected but amazing.',
                 'upvotes' => 120,
-                'comments' => 18,
+                'comments' => 22,
             ],
             [
                 'user' => 'jalanjalan99',
-                'title' => 'Hidden pizza spot in KL worth trying',
-                'text' => 'Small shop but the taste is insane. Very local Malaysian twist on pizza.',
+                'title' => 'Hidden gem pizza spot',
+                'text' => 'Local Malaysian twist hits different 🔥',
                 'upvotes' => 89,
-                'comments' => 12,
+                'comments' => 14,
             ],
             [
                 'user' => 'pizzalover88',
-                'title' => 'Why is Malaysian pizza so underrated?',
-                'text' => 'Crust is crispy, toppings are unique. More people should try this style.',
+                'title' => 'Worth trying?',
+                'text' => 'Yes. Especially cheese + sambal combo.',
                 'upvotes' => 54,
-                'comments' => 7,
+                'comments' => 8,
             ],
             [
-                'user' => 'malaysiaeats',
-                'title' => 'Tried “kampung pizza” for the first time today',
-                'text' => 'Unexpected combo of sambal + cheese actually works really well.',
-                'upvotes' => 101,
-                'comments' => 22,
+                'user' => 'makanhunter',
+                'title' => 'Unexpectedly good fusion',
+                'text' => 'Kampung pizza actually works really well.',
+                'upvotes' => 210,
+                'comments' => 31,
             ],
         ];
 

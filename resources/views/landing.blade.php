@@ -420,38 +420,77 @@
 
     <!-- YouTube Section -->
     <section id="videos" class="py-20 px-4 bg-zinc-950">
-        <div class="max-w-7xl mx-auto">
 
-            <h2 class="text-4xl font-bold text-center mb-12 text-white">
-                🎥 What People Say on YouTube
-            </h2>
+        <h2 class="text-4xl font-bold text-center mb-12 text-white">
+            🎥 What People Say on YouTube
+        </h2>
 
-            <div class="grid md:grid-cols-3 gap-6">
-                @foreach($youtubeVideos as $video)
-                    <div class="bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 hover:border-orange-500 transition">
+        <div class="grid md:grid-cols-3 gap-6">
+        @foreach($youtubeVideos as $video)
 
-                        <img src="{{ $video['thumbnail'] }}" class="w-full h-48 object-cover">
+            <div class="relative bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 hover:border-red-500 transition group">
 
-                        <div class="p-4">
-                            <h3 class="text-white font-semibold text-sm">
-                                {{ $video['title'] }}
-                            </h3>
+                <!-- Thumbnail -->
+                <div class="relative group">
 
-                            <p class="text-zinc-400 text-xs mt-2">
-                                {{ $video['channel'] }}
-                            </p>
+                    <!-- Thumbnail (default) -->
+                    <img
+                        src="{{ $video['thumbnail'] }}"
+                        class="w-full h-48 object-cover transition duration-300 group-hover:opacity-0"
+                    >
 
-                            <a href="https://www.youtube.com/watch?v={{ $video['id'] }}"
-                            target="_blank"
-                            class="inline-block mt-3 text-orange-400 text-sm">
-                                Watch Video →
-                            </a>
-                        </div>
+                    <!-- YouTube Preview (hover only) -->
+                    <iframe
+                        class="absolute inset-0 w-full h-48 opacity-0 group-hover:opacity-100 transition"
+                        src="https://www.youtube.com/embed/{{ $video['id'] }}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1"
+                        allow="autoplay; encrypted-media"
+                        allowfullscreen
+                    ></iframe>
+
+                    <!-- Play overlay -->
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-0 transition">
+                    </div>
+
+                </div>
+
+                <!-- Content -->
+                <div class="p-4">
+                    <h3 class="text-white font-semibold text-sm line-clamp-2">
+                        {{ $video['title'] }}
+                    </h3>
+
+                    <p class="text-zinc-400 text-xs mt-1">
+                        {{ $video['channel'] }}
+                    </p>
+
+                    <!-- Stats -->
+                    <div class="flex gap-3 text-xs text-zinc-400 mt-2">
+                        <span>👁 {{ number_format($video['views']) }}</span>
+                        <span>👍 {{ number_format($video['likes']) }}</span>
+                        <span>💬 {{ number_format($video['comments']) }}</span>
+                    </div>
+
+                    <div class="flex gap-2 mt-3">
+
+                        <!-- Button 1: YouTube -->
+                        <a href="https://www.youtube.com/watch?v={{ $video['id'] }}"
+                        target="_blank"
+                        class="flex-1 text-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition">
+                            ▶ YouTube
+                        </a>
+
+                        <!-- Button 2: Your custom page -->
+                        <a href="{{ route('video.watch', $video['id']) }}"
+                        class="flex-1 text-center px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-sm rounded-lg border border-zinc-700 transition">
+                            🎬 Watch
+                        </a>
 
                     </div>
-                @endforeach
+                </div>
+
             </div>
 
+        @endforeach
         </div>
     </section>
 

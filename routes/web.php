@@ -15,6 +15,9 @@ Route::get('/', [LandingPageController::class, 'index'])->name('landing');
 Route::post('/login', [App\Http\Controllers\LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
 
+Route::get('/video/{id}', [YouTubeController::class, 'watch'])
+    ->name('video.watch');
+
 // Route::get('/', [App\Http\Controllers\LoginController::class, 'dashboard'])->name('dashboard');
 Route::get('/login-admin', [App\Http\Controllers\LoginController::class, 'showLoginForm'])->name('login');
 Route::middleware('session.auth')->group(function () {
