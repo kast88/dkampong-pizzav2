@@ -10,8 +10,9 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() || Auth::user()->is_admin) {
-            return redirect()->route('dashboard')->with('error', 'Access denied. Admin privileges required.');
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return redirect()->route('landing')
+                ->with('error', 'Access denied. Admin only area.');
         }
 
         return $next($request);

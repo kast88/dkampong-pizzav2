@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Login - {{ config('app.name', 'Laravel') }}</title>
+    <title>Login - {{ config('app.name', 'Laravel') }}</title>
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -40,13 +40,13 @@
 
         <div class="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
             <div class="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-orange-100 bg-white/90 shadow-2xl shadow-black/10 backdrop-blur xl:grid-cols-2">
-                
+
                 <!-- Left side / branding -->
                 <div class="hidden xl:flex flex-col justify-between bg-gradient-to-br from-neutral-950 via-neutral-900 to-orange-950 px-10 py-12 text-white">
                     <div>
                         <div class="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-orange-100">
                             <span class="h-2.5 w-2.5 rounded-full bg-orange-400"></span>
-                            D'Kampong Pizza Admin
+                            Join 10,000+ pizza lovers
                         </div>
 
                         <div class="mt-10">
@@ -54,23 +54,23 @@
                                 {{ config('app.name', 'Laravel') }}
                             </p>
                             <h1 class="mt-4 text-4xl font-bold leading-tight">
-                                Freshly baked management, served hot.
+                                Fresh pizza, faster ordering, better experience.
                             </h1>
                             <p class="mt-4 max-w-md text-base leading-7 text-orange-50/80">
-                                Monitor and manage your D'Kampong Pizza platform from one secure dashboard.
+                                Order, track, and enjoy your favorite pizzas.
                             </p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-0 gap-4">
                         <div class="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
-                            <p class="text-sm text-orange-200/70">Access</p>
-                            <p class="mt-2 text-lg font-semibold text-white">Protected login</p>
+                            <p class="text-sm text-orange-200/70">Back for more?</p>
+                            <p class="mt-2 text-lg font-semibold text-white">Your pizza is waiting 🍕</p>
                         </div>
-                        <div class="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
+                        {{-- <div class="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
                             <p class="text-sm text-orange-200/70">System</p>
                             <p class="mt-2 text-lg font-semibold text-white">Admin control</p>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
@@ -84,7 +84,7 @@
                                 </svg>
                             </div>
                             <h1 class="mt-4 text-3xl font-bold tracking-tight text-neutral-900">
-                                Admin Login
+                                Login
                             </h1>
                             <p class="mt-2 text-sm text-neutral-600">
                                 Sign in to continue to {{ config('app.name', 'Laravel') }}.
@@ -92,7 +92,7 @@
                         </div>
 
                         <div class="hidden xl:block mb-8">
-                            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Admin Portal</p>
+                            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Sign in to your account</p>
                             <h2 class="mt-2 text-3xl font-bold tracking-tight text-neutral-900">
                                 Welcome back
                             </h2>
@@ -140,7 +140,8 @@
                                     <label for="password" class="block text-sm font-medium text-neutral-700">
                                         Password
                                     </label>
-                                    <a href="#" class="text-sm font-medium text-brand-600 transition hover:text-brand-700">
+                                    <a href="{{ route('password.request.form') }}"
+                                    class="text-sm font-medium text-brand-600 hover:text-brand-700">
                                         Forgot password?
                                     </a>
                                 </div>
@@ -172,6 +173,19 @@
                             >
                                 Login
                             </button>
+
+                            <a
+                                href="{{ route('register') }}"
+                                class="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm font-semibold text-neutral-700 shadow-sm transition hover:border-orange-500 hover:bg-orange-50 hover:text-orange-600"
+                            >
+                                Create new account
+                            </a>
+
+                            <a href="{{ url('/') }}"
+                                class="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm font-semibold text-neutral-700 shadow-sm transition hover:border-orange-500 hover:bg-orange-50 hover:text-orange-600"
+                            >
+                                Back to Homepage
+                            </a>
                         </form>
                     </div>
                 </div>

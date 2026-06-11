@@ -10,7 +10,7 @@
     <section class="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-sm shadow-slate-950/20">
         <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <p class="text-sm text-slate-300">
-                Search results for <span class="font-semibold text-white">{{ $search }}</span> • Total videos: <span class="font-semibold text-white">{{ number_format($totalVideos) }}</span>
+                Search results for <span class="font-semibold text-white">{{ $search ?? '' }}</span> • Total videos: <span class="font-semibold text-white">{{ number_format($totalVideos ?? 0) }}</span>
             </p>
             <form method="GET" class="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <label class="sr-only" for="youtube-search">Search pizza videos</label>
@@ -18,7 +18,7 @@
                     id="youtube-search"
                     type="text"
                     name="search"
-                    value="{{ $search }}"
+                    value="{{ $search ?? '' }}"
                     placeholder="Search pizza videos..."
                     class="min-w-0 flex-1 rounded-2xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-sm text-white outline-none ring-1 ring-transparent transition focus:border-red-400 focus:ring-red-500/20"
                 >
@@ -29,11 +29,11 @@
         </div>
     </section>
 
-    @if($isLoggedIn)
+    @if(Auth::check())
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-sm shadow-slate-950/20">
             <p class="text-sm text-slate-400">Total videos found</p>
-            <h3 class="mt-3 text-3xl font-semibold text-white">{{ number_format($totalVideos) }}</h3>
+            <h3 class="mt-3 text-3xl font-semibold text-white">{{ number_format($totalVideos ?? 0) }}</h3>
         </div>
 
         <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-sm shadow-slate-950/20">
@@ -125,7 +125,7 @@
     <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         @if($prevPageToken)
             <form method="GET" class="min-w-0 flex-1 sm:max-w-xs">
-                <input type="hidden" name="search" value="{{ $search }}">
+                <input type="hidden" name="search" value="{{ $search ?? '' }}">
                 <input type="hidden" name="pageToken" value="{{ $prevPageToken }}">
                 <button class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
                     Previous
@@ -135,7 +135,7 @@
 
         @if($nextPageToken)
             <form method="GET" class="min-w-0 flex-1 sm:max-w-xs">
-                <input type="hidden" name="search" value="{{ $search }}">
+                <input type="hidden" name="search" value="{{ $search ?? '' }}">
                 <input type="hidden" name="pageToken" value="{{ $nextPageToken }}">
                 <button class="w-full rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:brightness-110">
                     Next

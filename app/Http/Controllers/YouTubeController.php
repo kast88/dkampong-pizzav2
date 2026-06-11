@@ -8,148 +8,46 @@ class YouTubeController extends Controller
 {
     public function index()
     {
+        // You can reuse same logic as YouTubeController but lighter
         $apiKey = env('YOUTUBE_API_KEY');
-
-        $search = request('search', 'kampung pizza');
-
-        $pageToken = request('pageToken');
 
         $response = Http::get('https://www.googleapis.com/youtube/v3/search', [
             'part' => 'snippet',
-            'q' => $search,
+            'q' => 'kampung pizza',
             'type' => 'video',
-            'maxResults' => 12,
+            'maxResults' => 6,
             'key' => $apiKey,
-            'pageToken' => $pageToken
         ]);
 
-        $data = $response->json();
+        $videos = $response->json()['items'] ?? [];
 
-        $videos = $data['items'] ?? [];
-
-        // VIDEO IDS
-        $videoIds = collect($videos)
-            ->map(function($video){
-                return $video['id']['videoId'] ?? null;
-            })
-            ->filter()
-            ->values()
-            ->implode(',');
-
-        if(empty($videoIds)){
-
-            return view('youtube', [
-                'videos' => [],
-                'videoStats' => [],
-                'search' => $search,
-                'platform' => 'YouTube',
-                'totalVideos' => 0,
-                'nextPageToken' => null,
-                'prevPageToken' => null,
-
-                'chartLabels' => [],
-                'chartViews' => [],
-                'chartLikes' => [],
-                'chartComments' => [],
-                'chartEngagement' => [],
-                'chartLikeRatio' => [],
-                'averageLikeRatio' => 0,
-            ]);
-        }
-
-        // VIDEO STATS
-        $statsResponse = Http::get('https://www.googleapis.com/youtube/v3/videos', [
-            'part' => 'statistics,snippet',
-            'id' => $videoIds,
-            'key' => $apiKey
-        ]);
-
-        $statsData = $statsResponse->json()['items'] ?? [];
-
-        $videoStats = [];
-
-        // CHART DATA
-        $chartLabels = [];
-        $chartViews = [];
-        $chartLikes = [];
-        $chartComments = [];
-        $chartEngagement = [];
-        $chartLikeRatio = [];
-
-        $videosData = [];
-
-        foreach ($statsData as $item) {
-
-            if (
-                !isset($item['statistics']['viewCount']) ||
-                !isset($item['statistics']['likeCount']) ||
-                !isset($item['statistics']['commentCount'])
-            ) {
-                continue;
-            }
-
-            $videoStats[$item['id']] = $item; // ✅ IMPORTANT FIX
-
-            $views = (int) $item['statistics']['viewCount'];
-            $likes = (int) $item['statistics']['likeCount'];
-            $comments = (int) $item['statistics']['commentCount'];
-
-            $engagement = $views > 0
-                ? round((($likes + $comments) / $views) * 100, 2)
-                : 0;
-
-            $likeRatio = $views > 0
-                ? round(($likes / $views) * 100, 2)
-                : 0;
-
-            $videosData[] = [
-                'id' => $item['id'],
-                'title' => $item['snippet']['title'] ?? 'Video',
-                'channel' => $item['snippet']['channelTitle'] ?? '',
-                'published' => $item['snippet']['publishedAt'] ?? null,
-                'views' => $views,
-                'likes' => $likes,
-                'comments' => $comments,
-                'engagement' => $engagement,
-                'likeRatio' => $likeRatio,
-                'trending' => $views >= 100000
+        // Convert to simple format for landing page
+        $youtubeVideos = collect($videos)->map(function ($video) {
+            return [
+                'id' => $video['id']['videoId'] ?? null,
+                'title' => $video['snippet']['title'] ?? '',
+                'thumbnail' => $video['snippet']['thumbnails']['high']['url'] ?? '',
+                'channel' => $video['snippet']['channelTitle'] ?? '',
             ];
-        }
+        })->filter();
 
-        foreach ($videosData as $video) {
+        // TEMP: Reddit placeholder (we’ll upgrade later)
+        $redditReviews = [
+            [
+                'user' => 'foodie_my',
+                'text' => 'Best kampung-style pizza I’ve tried in Malaysia!',
+                'upvotes' => 120
+            ],
+            [
+                'user' => 'jalanjalan99',
+                'text' => 'Sambal pizza actually works better than expected 🔥',
+                'upvotes' => 89
+            ],
+        ];
 
-            $chartLabels[] = substr($video['title'], 0, 20) . '...';
-            $chartViews[] = $video['views'];
-            $chartLikes[] = $video['likes'];
-            $chartComments[] = $video['comments'];
-            $chartEngagement[] = $video['engagement'];
-            $chartLikeRatio[] = $video['likeRatio'];
-        }
-
-        $sortedVideos = collect($videosData)
-            ->sortByDesc('views')
-            ->values()
-            ->all();
-
-        $averageLikeRatio = collect($videosData)->avg('likeRatio');
-
-        return view('youtube', [
-            'videos' => $sortedVideos,
-            'videoStats' => $videoStats,
-            'search' => $search,
-            'platform' => 'YouTube',
-            'totalVideos' => $data['pageInfo']['totalResults'] ?? 0,
-            'nextPageToken' => $data['nextPageToken'] ?? null,
-            'prevPageToken' => $data['prevPageToken'] ?? null,
-
-            // CHARTS
-            'chartLabels' => $chartLabels,
-            'chartViews' => $chartViews,
-            'chartLikes' => $chartLikes,
-            'chartComments' => $chartComments,
-            'chartEngagement' => $chartEngagement,
-            'chartLikeRatio' => $chartLikeRatio,
-            'averageLikeRatio' => round($averageLikeRatio, 2),
+        return view('landing', [
+            'youtubeVideos' => $youtubeVideos,
+            'redditReviews' => $redditReviews,
         ]);
     }
 

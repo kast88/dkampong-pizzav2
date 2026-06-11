@@ -3,7 +3,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Support\SessionUser;
+// use App\Support\SessionUser;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -13,14 +13,14 @@ class EnsureSessionUserAuthenticated
 {
     public function handle(Request $request, Closure $next): Response
     {
-        Log::debug(! SessionUser::check()
-            ? 'No authenticated user found in session.'
-            : 'Authenticated user found in session: ' . json_encode(SessionUser::get())
-        );
-        if (! SessionUser::check()) {
-            return redirect()->route('login')
-                ->with('error', 'Please login first.');
-        }
+        // Log::debug(! SessionUser::check()
+        //     ? 'No authenticated user found in session.'
+        //     : 'Authenticated user found in session: ' . json_encode(SessionUser::get())
+        // );
+        // if (! SessionUser::check()) {
+        //     return redirect()->route('login')
+        //         ->with('error', 'Please login first.');
+        // }
 
         return $next($request);
     }

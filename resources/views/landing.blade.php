@@ -3,19 +3,136 @@
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950">
     <!-- Navigation Bar -->
-    <nav class="fixed w-full top-0 z-50 backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800">
+    <nav class="w-full top-0 z-[999] relative backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+
+            <!-- Logo -->
             <div class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                 🍕 D'Kampong Pizza
             </div>
-            <a href="{{ route('login') }}" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition">
-                Login
-            </a>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex gap-8 text-zinc-300 font-semibold items-center">
+
+                <a href="#home" class="hover:text-orange-400 transition">Home</a>
+                <a href="#menu" class="hover:text-orange-400 transition">Menu</a>
+                <a href="#videos" class="hover:text-orange-400 transition">🎥 Videos</a>
+                <a href="#reviews" class="hover:text-orange-400 transition">💬 Reviews</a>
+
+                @auth
+                    <!-- Cart -->
+                    @php
+                        $cartCount = auth()->user()->cart?->items->sum('quantity') ?? 0;
+                    @endphp
+
+                    <a href="#"
+                    class="relative px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-full text-white">
+
+                        🛒
+
+                        @if($cartCount > 0)
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                {{ $cartCount }}
+                            </span>
+                        @endif
+                    </a>
+
+                    <!-- Orders -->
+                    <a href="#"
+                    class="hover:text-orange-400 transition">
+                        📦 Orders
+                    </a>
+
+                    <!-- Dashboard -->
+                    @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('dashboard') }}"
+                        class="hover:text-orange-400 transition">
+                            📊 Dashboard
+                        </a>
+                    @endif
+                @endauth
+
+            </div>
+
+            @guest
+                <a href="{{ route('login') }}"
+                class="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition">
+                    Login
+                </a>
+            @endguest
+
+            @auth
+            <div x-data="{ open: false }" class="relative">
+
+                <!-- Button -->
+                <button
+                    @click="open = !open"
+                    class="flex items-center gap-3 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-full font-semibold text-white transition"
+                >
+                    <!-- Avatar Circle -->
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-sm font-bold">
+                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                    </div>
+
+                    <!-- Name -->
+                    <span class="hidden sm:block max-w-[120px] truncate">
+                        {{ Auth::user()->name }}
+                    </span>
+
+                    <!-- Chevron Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4 opacity-80"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Dropdown -->
+                <div
+                    x-show="open"
+                    @click.away="open = false"
+                    x-transition
+                    class="absolute right-0 mt-3 w-52 bg-zinc-900 border border-zinc-700 rounded-xl shadow-xl z-50 overflow-hidden"
+                >
+                    <!-- Profile -->
+                    <a href="{{ route('profile.edit') }}"
+                    class="flex items-center gap-2 px-4 py-3 text-sm text-zinc-200 hover:bg-zinc-800 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5.121 17.804A4 4 0 017 16h10a4 4 0 011.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Edit Profile
+                    </a>
+
+                    <!-- Divider -->
+                    <div class="border-t border-zinc-800"></div>
+
+                    <!-- Logout -->
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-zinc-800 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V4" />
+                            </svg>
+                            Logout
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+            @endauth
+
         </div>
     </nav>
 
     <!-- Hero Section - Full Image Static -->
-    <div class="relative min-h-screen w-full bg-cover bg-center bg-no-repeat" style="background-image: url('/landing_page.png');">
+    <div id="home" class="relative min-h-screen w-full bg-cover bg-center bg-no-repeat"
+        style="background-image: url('/landing_page.png');">
     </div>
 
     <!-- Content Section -->
@@ -173,7 +290,7 @@
     </div>
 
     <!-- Menu Section -->
-    <section class="py-20 px-4 relative" style="background-image: url('/menu.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <section id="menu" class="py-20 px-4 relative" style="background-image: url('/menu.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
         <!-- Dark overlay -->
         <div class="absolute inset-0 bg-black/50"></div>
         <div class="max-w-7xl mx-auto relative z-10">
@@ -212,15 +329,15 @@
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <!-- Image Placeholder -->
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
+                            <img src="/menu/1.png" alt="Ayam Percik Pizza" class="absolute inset-0 w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                            <span class="text-6xl">�</span>
                         </div>
                         <!-- Content -->
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">Ayam Percik Pizza</h3>
                             <p class="text-zinc-400 text-sm mb-4">Tender grilled chicken with creamy Kelantan-style percik sauce.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">$28.90</span>
+                                <span class="text-orange-400 font-bold text-lg">RM 28</span>
                                 <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
                                     Order
                                 </button>
@@ -232,17 +349,23 @@
                 <div class="menu-item all classic">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
+                            <img src="/menu/2.png" alt="Ikan Bilis Crunch" class="absolute inset-0 w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                            <span class="text-6xl">🐟</span>
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">Ikan Bilis Crunch</h3>
                             <p class="text-zinc-400 text-sm mb-4">Crispy anchovies, onions, chili flakes, and mozzarella cheese.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">$24.90</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
+                                <span class="text-orange-400 font-bold text-lg">RM 20</span>
+                                {{-- <form method="POST" action="{{ route('cart.add', $product->id) }}"> --}}
+                                <form method="POST" action="#">
+                                    @csrf
+
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
+                                        Add to Cart 🛒
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -252,14 +375,14 @@
                 <div class="menu-item all spicy">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
+                            <img src="/menu/3.png" alt="Sambal Udang Village" class="absolute inset-0 w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                            <span class="text-6xl">🌶️</span>
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">Sambal Udang Village</h3>
                             <p class="text-zinc-400 text-sm mb-4">Juicy prawns topped with spicy homemade sambal and melted cheese.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">$33.90</span>
+                                <span class="text-orange-400 font-bold text-lg">RM 25</span>
                                 <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
                                     Order
                                 </button>
@@ -271,14 +394,14 @@
                 <div class="menu-item all spicy">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
+                            <img src="/menu/4.png" alt="Pedas Giler Kampung" class="absolute inset-0 w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                            <span class="text-6xl">🔥</span>
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">Pedas Giler Kampung</h3>
                             <p class="text-zinc-400 text-sm mb-4">Bird's eye chilies, spicy sambal, chicken slices, and extra cheese.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">$29.90</span>
+                                <span class="text-orange-400 font-bold text-lg">RM 40</span>
                                 <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
                                     Order
                                 </button>
@@ -291,14 +414,14 @@
                 <div class="menu-item all premium">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
+                            <img src="/menu/5.png" alt="D'Kampong Signature" class="absolute inset-0 w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                            <span class="text-6xl">👑</span>
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">D'Kampong Signature</h3>
                             <p class="text-zinc-400 text-sm mb-4">Chicken rendang, sambal, mushrooms, onions, and premium cheese blend.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">$34.90</span>
+                                <span class="text-orange-400 font-bold text-lg">RM 45</span>
                                 <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
                                     Order
                                 </button>
@@ -310,14 +433,14 @@
                 <div class="menu-item all premium">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
+                            <img src="/menu/6.png" alt="Rendang Tok Special" class="absolute inset-0 w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                            <span class="text-6xl">�</span>
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">Rendang Tok Special</h3>
                             <p class="text-zinc-400 text-sm mb-4">Traditional beef rendang with mozzarella and fresh herbs.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">$30.90</span>
+                                <span class="text-orange-400 font-bold text-lg">RM 30</span>
                                 <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
                                     Order
                                 </button>
@@ -329,14 +452,14 @@
                 <div class="menu-item all premium">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
+                            <img src="/menu/7.png" alt="Sotong Bakar Pizza" class="absolute inset-0 w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                            <span class="text-6xl">🦑</span>
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">Sotong Bakar Pizza</h3>
                             <p class="text-zinc-400 text-sm mb-4">Grilled squid, smoky sambal, mozzarella, and fresh herbs.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">$32.90</span>
+                                <span class="text-orange-400 font-bold text-lg">RM 40</span>
                                 <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
                                     Order
                                 </button>
@@ -349,14 +472,14 @@
                 <div class="menu-item all vegetarian">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
+                            <img src="/menu/8.png" alt="Ulam Garden Pizza" class="absolute inset-0 w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                            <span class="text-6xl">🌿</span>
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">Ulam Garden Pizza</h3>
                             <p class="text-zinc-400 text-sm mb-4">Fresh vegetables, herbs, cherry tomatoes, and garlic cream sauce.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">$23.90</span>
+                                <span class="text-orange-400 font-bold text-lg">RM 20</span>
                                 <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
                                     Order
                                 </button>
@@ -368,14 +491,14 @@
                 <div class="menu-item all vegetarian">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
+                            <img src="/menu/9.png" alt="Cendawan Hutan" class="absolute inset-0 w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                            <span class="text-6xl">🍄</span>
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">Cendawan Hutan</h3>
                             <p class="text-zinc-400 text-sm mb-4">Mixed mushrooms, garlic butter, herbs, and creamy mozzarella.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">$26.90</span>
+                                <span class="text-orange-400 font-bold text-lg">RM 25</span>
                                 <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
                                     Order
                                 </button>
@@ -383,6 +506,121 @@
                         </div>
                     </div>
                 </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- YouTube Section -->
+    <section id="videos" class="py-20 px-4 bg-zinc-950">
+
+        <h2 class="text-4xl font-bold text-center mb-12 text-white">
+            🎥 What People Say on YouTube
+        </h2>
+
+        <div class="grid md:grid-cols-3 gap-6">
+        @foreach($youtubeVideos as $video)
+
+            <div class="relative bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 hover:border-red-500 transition group">
+
+                <!-- Thumbnail -->
+                <div class="relative group">
+
+                    <!-- Thumbnail (default) -->
+                    <img
+                        src="{{ $video['thumbnail'] }}"
+                        class="w-full h-48 object-cover transition duration-300 group-hover:opacity-0"
+                    >
+
+                    <!-- YouTube Preview (hover only) -->
+                    <iframe
+                        class="absolute inset-0 w-full h-48 opacity-0 group-hover:opacity-100 transition"
+                        src="https://www.youtube.com/embed/{{ $video['id'] }}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1"
+                        allow="autoplay; encrypted-media"
+                        allowfullscreen
+                    ></iframe>
+
+                    <!-- Play overlay -->
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-0 transition">
+                    </div>
+
+                </div>
+
+                <!-- Content -->
+                <div class="p-4">
+                    <h3 class="text-white font-semibold text-sm line-clamp-2">
+                        {{ $video['title'] }}
+                    </h3>
+
+                    <p class="text-zinc-400 text-xs mt-1">
+                        {{ $video['channel'] }}
+                    </p>
+
+                    <!-- Stats -->
+                    <div class="flex gap-3 text-xs text-zinc-400 mt-2">
+                        <span>👁 {{ number_format($video['views']) }}</span>
+                        <span>👍 {{ number_format($video['likes']) }}</span>
+                        <span>💬 {{ number_format($video['comments']) }}</span>
+                    </div>
+
+                    <div class="flex gap-2 mt-3">
+
+                        <!-- Button 1: YouTube -->
+                        <a href="https://www.youtube.com/watch?v={{ $video['id'] }}"
+                        target="_blank"
+                        class="flex-1 text-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition">
+                            ▶ YouTube
+                        </a>
+
+                        <!-- Button 2: Your custom page -->
+                        <a href="{{ route('video.watch', $video['id']) }}"
+                        class="flex-1 text-center px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-sm rounded-lg border border-zinc-700 transition">
+                            🎬 Watch
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+
+        @endforeach
+        </div>
+    </section>
+
+    <!-- Reddit Reviews Section -->
+    <section id="reviews" class="py-20 px-4 bg-zinc-900">
+        <div class="max-w-7xl mx-auto">
+
+            <h2 class="text-4xl font-bold text-center mb-12 text-white">
+                💬 Reddit Discussions
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                @foreach($redditReviews as $review)
+
+                <a href="{{ $review['url'] }}" target="_blank"
+                class="block p-6 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-orange-500 transition">
+
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <p class="text-orange-400 font-semibold">u/{{ $review['user'] }}</p>
+                            <p class="text-white font-bold text-sm">{{ $review['title'] }}</p>
+                        </div>
+
+                        <div class="text-right text-zinc-400 text-sm">
+                            🔺 {{ $review['upvotes'] }}<br>
+                            💬 {{ $review['comments'] }}
+                        </div>
+                    </div>
+
+                    <p class="text-zinc-300 mt-3">
+                        {{ $review['text'] }}
+                    </p>
+
+                </a>
+
+                @endforeach
 
             </div>
         </div>
@@ -410,7 +648,7 @@
     <!-- Footer -->
     <footer class="border-t border-zinc-800 py-8 px-4" style="background-color: #18181b;">
         <div class="max-w-7xl mx-auto text-center text-zinc-400 text-sm">
-            <p>&copy; 2024 D'Kampong Pizza. All rights reserved. | Crafted with ❤️</p>
+            <p>&copy; 2026 D'Kampong Pizza. All rights reserved. | Crafted with ❤️</p>
         </div>
     </footer>
 </div>

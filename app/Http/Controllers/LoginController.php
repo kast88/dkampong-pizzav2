@@ -6,23 +6,20 @@ use App\Enums\LoginProvider;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Services\BloggerService;
-use App\Support\SessionUser;
+// use App\Support\SessionUser;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
     public function showLoginForm(): View
     {
-        if (SessionUser::check()) {
-            return view('dashboard', [
-                'user' => SessionUser::get(),
-            ]);
-        }
-
         return view('login');
     }
 
@@ -30,33 +27,37 @@ class LoginController extends Controller
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:4'],
+            'password' => ['required', 'string', 'min:6'],
         ]);
 
-        // Fake login, no DB
-        if (
-            $credentials['email'] !== 'admin@example.com' ||
-            $credentials['password'] !== '123456'
-        ) {
-            return back()
-                ->withErrors(['email' => 'Invalid credentials.'])
-                ->withInput();
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return back()->withErrors([
+                'email' => 'Invalid credentials'
+            ]);
         }
 
-        SessionUser::put([
-            'id' => 'USR-1001',
-            'name' => 'System Admin',
-            'email' => $credentials['email'],
-            'role' => UserRole::Admin,
-            'provider' => LoginProvider::Local,
-        ]);
+        if (!$user->is_active) {
+            return back()->withErrors([
+                'email' => 'Account not found or disabled.'
+            ]);
+        }
+
+        $remember = $request->boolean('remember');
+
+        Auth::login($user, $remember);
 
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+        if ($user->role === 'admin') {
+            return redirect()->route('dashboard');
+        }
+
+        return redirect()->route('landing');
     }
 
-    public function dashboard(BloggerService $blogger): View
+    public function dashboard(BloggerService $blogger)
     {
         $apiKey = env('YOUTUBE_API_KEY');
         $youtubeVideos = collect([]);
@@ -65,8 +66,9 @@ class LoginController extends Controller
         $blog = [];
         $blogPosts = collect([]);
 
-        $isLoggedIn = SessionUser::check();
-        Log::debug('User logged in: ' . ($isLoggedIn ? 'Yes' : 'No'));
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->route('landing');
+        }
 
         try {
             $blogUrl = 'https://dkampong-pizza.blogspot.com/';
@@ -88,7 +90,7 @@ class LoginController extends Controller
         $getRedditData = $this->getRedditData();
 
         return view('dashboard', [
-            'user' => SessionUser::get(),
+            // 'user' => SessionUser::get(),
             'youtubeVideos' => $youtubeVideos,
             'redditPost' => $redditPost ?? [],
             'redditComments' => $redditComments,
@@ -127,9 +129,12 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-        SessionUser::logout();
+        Auth::logout();
 
-        return redirect()->route('dashboard');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('landing');
     }
 
         public function getYouTubeData()
@@ -295,7 +300,7 @@ class LoginController extends Controller
         $children = $data['data']['children'] ?? [];
 
         if (empty($children)) {
-            return view('reddit', [
+            return [
                 'posts' => [],
                 'postStats' => [],
                 'search' => $search,
@@ -308,7 +313,7 @@ class LoginController extends Controller
                 'chartUps' => [],
                 'chartComments' => [],
                 'chartEngagement' => [],
-            ]);
+            ];
         }
 
         $postsData = [];
@@ -375,5 +380,31 @@ class LoginController extends Controller
             'chartComments' => $chartComments,
             'chartEngagement' => $chartEngagement,
         ];
+    }
+
+    public function showRegister(): \Illuminate\View\View
+    {
+        return view('register');
+    }
+
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'min:6', 'confirmed'],
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'user',
+            'is_active' => true,
+        ]);
+
+        return redirect()
+            ->route('login')
+            ->with('success', 'Account created successfully. Please login.');
     }
 }
