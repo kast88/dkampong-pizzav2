@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordRequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedditController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\YouTubeController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/reviews/{post}', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {

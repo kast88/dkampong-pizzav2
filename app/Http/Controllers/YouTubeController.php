@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
+use App\Models\Review;
 use Illuminate\Support\Facades\Http;
 
 class YouTubeController extends Controller
@@ -63,6 +65,7 @@ class YouTubeController extends Controller
             'part' => 'snippet',
             'videoId' => $id,
             'maxResults' => 100,
+            'order' => 'time',
             'pageToken' => $pageToken,
             'key' => $apiKey
         ]);
@@ -80,10 +83,26 @@ class YouTubeController extends Controller
 
         $videoData = $videoResponse->json()['items'][0] ?? null;
 
+        // find or create post
+        $post = Post::firstOrCreate(
+            ['youtube_video_id' => $id],
+            [
+                'user_id' => auth()->id() ?? 1,
+            ]
+        );
+
+        // fetch reviews
+        $reviews = Review::where('video_id', $id)
+            ->with('user')
+            ->latest()
+            ->get();
+
         return view('watch_youtube', [
             'id' => $id,
             'comments' => $comments,
             'video' => $videoData,
+            'post' => $post,
+            'reviews' => $reviews,
             'nextPageToken' => $data['nextPageToken'] ?? null,
             'prevPageToken' => $data['prevPageToken'] ?? null
         ]);

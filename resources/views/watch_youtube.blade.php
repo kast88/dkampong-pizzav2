@@ -204,6 +204,35 @@
             background:#dc2626;
         }
 
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            z-index: 9999;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #1e293b;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
         /* MOBILE */
         @media(max-width:768px){
 
@@ -308,93 +337,225 @@
                     ▶ Open in YouTube
                 </a>
 
+                <button onclick="openCommentsModal()"
+                        class="btn"
+                        style="background:#3b82f6;">
+                    💬 YouTube Comments
+                </button>
+
             </div>
 
         </div>
 
     </div>
+@auth
+<div class="mt-10 bg-gradient-to-br from-zinc-900 to-zinc-950 p-6 rounded-2xl border border-white/5 shadow-xl">
 
-    <!-- COMMENTS -->
-    <div class="comments-section">
+    <h3 class="text-xl font-bold mb-5 flex items-center gap-2">
+        ✍️ Write a Review
+    </h3>
 
-        <div class="comments-header">
+    <form method="POST"
+          action="{{ route('reviews.store', $id) }}"
+          enctype="multipart/form-data"
+          class="space-y-4">
 
-            <h2 style="
-                display:flex;
-                align-items:center;
-                gap:10px;
-            ">
+        @csrf
 
-                <span>
-                    💬 Community Comments
-                </span>
+        <textarea name="content"
+                  class="w-full p-4 rounded-xl bg-zinc-800/70 border border-white/10 text-white focus:outline-none focus:border-orange-400 transition"
+                  placeholder="Share your thoughts about this video..."
+                  required></textarea>
 
-                <span class="comment-count">
-                    {{ number_format($commentsTotal) }}
-                </span>
+        <input type="file"
+               name="image"
+               class="w-full text-sm text-zinc-300 file:bg-orange-500 file:text-white file:px-4 file:py-2 file:rounded-lg file:border-0">
 
-            </h2>
+        <button class="bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2 rounded-xl text-white font-semibold hover:opacity-90 transition">
+            Post Review
+        </button>
 
-        </div>
+    </form>
 
-        @foreach($comments as $index => $comment)
+</div>
+@else
+<div class="mt-10 bg-zinc-900/60 p-6 rounded-2xl border border-white/5 text-center">
 
-            @php
+    <p class="text-zinc-400 mb-4">
+        You must be logged in to write a review.
+    </p>
 
-                $snippet = $comment['snippet']['topLevelComment']['snippet'];
+    <a href="{{ route('login') }}"
+       class="inline-block bg-orange-500 px-5 py-2 rounded-xl text-white font-semibold hover:bg-orange-600 transition">
+        Login to Continue
+    </a>
 
-                $author = $snippet['authorDisplayName'];
+</div>
+@endauth
 
-                $text = $snippet['textDisplay'];
 
-                $avatarLetter = strtoupper(substr($author,0,1));
+<!-- REVIEWS -->
+<div class="mt-10">
 
-            @endphp
+    <h3 class="text-xl font-bold mb-6 flex items-center justify-between">
+        <span>💬 Community Reviews</span>
 
-            <div class="comment-card comment-item"
-                 style="{{ $index >= 5 ? 'display:none;' : '' }}">
+        <span class="text-xs bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full">
+            {{ $reviews->count() }}
+        </span>
+    </h3>
 
-                <div class="comment-top">
+    <div class="space-y-5">
 
-                    <div class="avatar">
-                        {{ $avatarLetter }}
+        @forelse($reviews as $review)
+
+            <div class="bg-zinc-900/70 border border-white/5 p-5 rounded-2xl hover:border-orange-500/20 transition">
+
+                <!-- HEADER -->
+                <div class="flex items-start justify-between gap-3">
+
+                    <div class="flex items-center gap-3">
+
+                        <!-- Avatar -->
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center font-bold text-sm shadow">
+                            {{ strtoupper(substr($review->user->name, 0, 1)) }}
+                        </div>
+
+                        <div>
+                            <div class="font-semibold text-white text-sm">
+                                {{ $review->user->name }}
+                            </div>
+
+                            <div class="text-xs text-zinc-500">
+                                {{ $review->created_at->diffForHumans() }}
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="author">
-                        {{ $author }}
-                    </div>
+                    @if($review->user_id == auth()->id())
+                        <div class="flex gap-3 text-xs">
+
+                            <form method="POST" action="{{ route('reviews.update', $review->id) }}">
+                                @csrf
+                                @method('PUT')
+
+                                <button class="text-green-400 hover:text-green-300">
+                                    Edit
+                                </button>
+                            </form>
+
+                            <form method="POST" action="{{ route('reviews.destroy', $review->id) }}">
+                                @csrf
+                                @method('DELETE')
+
+                                <button class="text-red-400 hover:text-red-300">
+                                    Delete
+                                </button>
+                            </form>
+
+                        </div>
+                    @endif
 
                 </div>
 
-                <div class="comment-text">
-                    {!! $text !!}
+                <!-- CONTENT -->
+                <p class="mt-4 text-zinc-300 text-sm leading-relaxed">
+                    {{ $review->content }}
+                </p>
+
+                <!-- IMAGE -->
+                @if($review->image)
+                    <img src="{{ asset('storage/'.$review->image) }}"
+                         class="mt-4 rounded-xl max-h-72 w-full object-cover border border-white/10">
+                @endif
+
+                <!-- ACTIONS -->
+                <div class="flex items-center gap-6 mt-4 text-xs text-zinc-400">
+
+                    <button class="hover:text-white transition flex items-center gap-1">
+                        👍 Like
+                    </button>
+
+                    <button class="hover:text-white transition flex items-center gap-1">
+                        👎 Dislike
+                    </button>
+
+                    <button class="hover:text-white transition flex items-center gap-1">
+                        💬 Reply
+                    </button>
+
                 </div>
 
             </div>
 
-        @endforeach
+        @empty
 
-        <!-- BUTTONS -->
-        <div class="comment-actions">
+            <div class="text-center py-10 text-zinc-500">
+                No reviews yet. Be the first to share your thoughts ✨
+            </div>
 
-            <button
-                onclick="showMore()"
-                id="seeMoreBtn"
-                class="comment-btn more-btn">
+        @endforelse
 
-                See More Comments ↓
+    </div>
+</div>
 
-            </button>
+    <!-- COMMENTS MODAL -->
+    <div id="commentsModal" class="modal">
 
-            <button
-                onclick="showLess()"
-                id="seeLessBtn"
-                class="comment-btn less-btn"
-                style="display:none;">
+        <div class="modal-box">
 
-                See Less ↑
+            <!-- HEADER -->
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:15px;border-bottom:1px solid rgba(255,255,255,0.1);">
 
-            </button>
+                <h2 style="font-size:18px;">
+                    💬 YouTube Comments
+                    <span style="background:rgba(249,115,22,0.2);padding:4px 8px;border-radius:10px;font-size:12px;">
+                        {{ number_format($video['statistics']['commentCount'] ?? 0) }}
+                    </span>
+                </h2>
+
+                <button onclick="closeCommentsModal()" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;">
+                    ✕
+                </button>
+
+            </div>
+
+            <!-- BODY -->
+            <div style="padding:15px;">
+
+                @foreach($comments as $comment)
+
+                    @php
+                        $snippet = $comment['snippet']['topLevelComment']['snippet'];
+                        $author = $snippet['authorDisplayName'];
+                        $text = $snippet['textDisplay'];
+                        $avatarLetter = strtoupper(substr($author,0,1));
+                    @endphp
+
+                    <div style="display:flex;gap:10px;margin-bottom:15px;">
+
+                        <div style="width:40px;height:40px;border-radius:10px;
+                            background:linear-gradient(135deg,#ef4444,#f97316);
+                            display:flex;align-items:center;justify-content:center;font-weight:bold;">
+                            {{ $avatarLetter }}
+                        </div>
+
+                        <div>
+                            <div style="font-weight:600;font-size:14px;">
+                                {{ $author }}
+                            </div>
+
+                            <div style="font-size:13px;color:#cbd5e1;">
+                                {!! $text !!}
+                            </div>
+                        </div>
+
+                    </div>
+
+                @endforeach
+
+            </div>
 
         </div>
 
@@ -404,71 +565,20 @@
 
 <script>
 
-    let visibleCount = 10;
+function openCommentsModal() {
+    document.getElementById('commentsModal').classList.add('active');
+}
 
-    const step = 50;
+function closeCommentsModal() {
+    document.getElementById('commentsModal').classList.remove('active');
+}
 
-    function updateComments(){
-
-        let items = document.querySelectorAll('.comment-item');
-
-        items.forEach((item,index)=>{
-
-            if(index < visibleCount){
-                item.style.display='block';
-            }
-            else{
-                item.style.display='none';
-            }
-
-        });
-
-        // SHOW / HIDE MORE BUTTON
-        if(visibleCount >= items.length){
-            document.getElementById('seeMoreBtn').style.display='none';
-        }
-        else{
-            document.getElementById('seeMoreBtn').style.display='inline-block';
-        }
-
-        // SHOW / HIDE LESS BUTTON
-        if(visibleCount > step){
-            document.getElementById('seeLessBtn').style.display='inline-block';
-        }
-        else{
-            document.getElementById('seeLessBtn').style.display='none';
-        }
-
+// click outside to close
+document.getElementById('commentsModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        closeCommentsModal();
     }
-
-    function showMore(){
-
-        let items = document.querySelectorAll('.comment-item');
-
-        visibleCount += step;
-
-        if(visibleCount > items.length){
-            visibleCount = items.length;
-        }
-
-        updateComments();
-
-    }
-
-    function showLess(){
-
-        visibleCount -= step;
-
-        if(visibleCount < 10){
-            visibleCount = 10;
-        }
-
-        updateComments();
-
-    }
-
-    // INITIAL LOAD
-    updateComments();
+});
 
 </script>
 
