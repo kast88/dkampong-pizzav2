@@ -58,39 +58,14 @@
     $redditChartLabels = ['Upvotes', 'Comments', 'Avg Comment Length'];
     $redditChartValues = [$redditUps, $redditCommentsTotal, $redditAvgCommentLength];
 
-    use App\Support\SessionUser;
-    $isLoggedIn = SessionUser::check();
+    // use App\Support\SessionUser;
+    // $isLoggedIn = SessionUser::check();
 @endphp
 
 <div class="min-h-screen bg-zinc-950 text-zinc-100">
     <div class="flex min-h-screen">
         <aside class="hidden w-72 flex-col border-r border-white/10 bg-black/40 lg:flex">
-            <div class="border-b border-white/10 px-6 py-6">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 text-lg font-black text-white shadow-lg shadow-red-900/30">
-                        DK
-                    </div>
-                    <div>
-                        <p class="text-lg font-bold tracking-wide">D'Kampong</p>
-                        <p class="text-sm text-zinc-400">Media Analytics</p>
-                    </div>
-                </div>
-            </div>
-
-            <nav class="flex-1 space-y-2 px-4 py-6 text-sm">
-                <a href="#" class="flex items-center gap-3 rounded-xl bg-gradient-to-r from-orange-500/20 to-red-500/20 px-4 py-3 font-medium text-white ring-1 ring-orange-500/30">
-                    <span>📊</span>
-                    <span>Dashboard</span>
-                </a>
-            </nav>
-
-            <div class="border-t border-white/10 p-4">
-                <div class="rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-800 p-4 ring-1 ring-white/10">
-                    <p class="text-sm text-zinc-400">Logged in as</p>
-                    <p class="mt-1 font-semibold text-white">{{ $name }}</p>
-                    <p class="text-sm text-zinc-500">{{ $user['email'] ?? 'admin@dkampong.com' }}</p>
-                </div>
-            </div>
+            @include('layouts.sidebar')
         </aside>
 
         <main class="flex-1">
@@ -101,7 +76,7 @@
                         <h1 class="mt-1 text-3xl font-bold text-white">Social Media Platform Dashboard</h1>
                         <p class="mt-1 text-sm text-zinc-400">Track social engagement and community response in one place.</p>
                     </div>
-                    @if($isLoggedIn)
+                    {{-- @if(Auth::check())
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="rounded-xl bg-gradient-to-r from-red-500 to-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-red-950/30 transition hover:opacity-90">
@@ -114,7 +89,7 @@
                                 Login
                             </button>
                         </a>
-                    @endif
+                    @endif --}}
                 </div>
             </header>
 

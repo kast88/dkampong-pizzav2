@@ -3,7 +3,7 @@
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950">
     <!-- Navigation Bar -->
-    <nav class="w-full top-0 z-50 backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800">
+    <nav class="w-full top-0 z-[999] relative backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
 
             <!-- Logo -->
@@ -12,33 +12,120 @@
             </div>
 
             <!-- Navigation Links -->
-            <div class="hidden md:flex gap-8 text-zinc-300 font-semibold">
+            <div class="hidden md:flex gap-8 text-zinc-300 font-semibold items-center">
 
-                <a href="#home" class="hover:text-orange-400 transition">
-                    Home
-                </a>
+                <a href="#home" class="hover:text-orange-400 transition">Home</a>
+                <a href="#menu" class="hover:text-orange-400 transition">Menu</a>
+                <a href="#videos" class="hover:text-orange-400 transition">🎥 Videos</a>
+                <a href="#reviews" class="hover:text-orange-400 transition">💬 Reviews</a>
 
-                <a href="#menu" class="hover:text-orange-400 transition">
-                    Menu
-                </a>
+                @auth
+                    <!-- Cart -->
+                    @php
+                        $cartCount = auth()->user()->cart?->items->sum('quantity') ?? 0;
+                    @endphp
 
-                <!-- YouTube Videos Section -->
-                <a href="#videos" class="hover:text-orange-400 transition">
-                    🎥 Videos
-                </a>
+                    <a href="#"
+                    class="relative px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-full text-white">
 
-                <!-- Reddit Reviews Section -->
-                <a href="#reviews" class="hover:text-orange-400 transition">
-                    💬 Reviews
-                </a>
+                        🛒
+
+                        @if($cartCount > 0)
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                {{ $cartCount }}
+                            </span>
+                        @endif
+                    </a>
+
+                    <!-- Orders -->
+                    <a href="#"
+                    class="hover:text-orange-400 transition">
+                        📦 Orders
+                    </a>
+
+                    <!-- Dashboard -->
+                    @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('dashboard') }}"
+                        class="hover:text-orange-400 transition">
+                            📊 Dashboard
+                        </a>
+                    @endif
+                @endauth
 
             </div>
 
-            <!-- Login -->
-            <a href="{{ route('login') }}"
-            class="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition">
-                Login
-            </a>
+            @guest
+                <a href="{{ route('login') }}"
+                class="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition">
+                    Login
+                </a>
+            @endguest
+
+            @auth
+            <div x-data="{ open: false }" class="relative">
+
+                <!-- Button -->
+                <button
+                    @click="open = !open"
+                    class="flex items-center gap-3 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-full font-semibold text-white transition"
+                >
+                    <!-- Avatar Circle -->
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-sm font-bold">
+                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                    </div>
+
+                    <!-- Name -->
+                    <span class="hidden sm:block max-w-[120px] truncate">
+                        {{ Auth::user()->name }}
+                    </span>
+
+                    <!-- Chevron Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4 opacity-80"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Dropdown -->
+                <div
+                    x-show="open"
+                    @click.away="open = false"
+                    x-transition
+                    class="absolute right-0 mt-3 w-52 bg-zinc-900 border border-zinc-700 rounded-xl shadow-xl z-50 overflow-hidden"
+                >
+                    <!-- Profile -->
+                    <a href="{{ route('profile.edit') }}"
+                    class="flex items-center gap-2 px-4 py-3 text-sm text-zinc-200 hover:bg-zinc-800 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5.121 17.804A4 4 0 017 16h10a4 4 0 011.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Edit Profile
+                    </a>
+
+                    <!-- Divider -->
+                    <div class="border-t border-zinc-800"></div>
+
+                    <!-- Logout -->
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-zinc-800 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V4" />
+                            </svg>
+                            Logout
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+            @endauth
 
         </div>
     </nav>
@@ -270,9 +357,15 @@
                             <p class="text-zinc-400 text-sm mb-4">Crispy anchovies, onions, chili flakes, and mozzarella cheese.</p>
                             <div class="flex justify-between items-center">
                                 <span class="text-orange-400 font-bold text-lg">RM 20</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
+                                {{-- <form method="POST" action="{{ route('cart.add', $product->id) }}"> --}}
+                                <form method="POST" action="#">
+                                    @csrf
+
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
+                                        Add to Cart 🛒
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
