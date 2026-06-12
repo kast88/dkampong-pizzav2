@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/reviews/{post}', [ReviewController::class, 'store'])->name('reviews.store');
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::post('/reviews/{review}/react', [ReviewController::class, 'react'])->name('reviews.react');
+    Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])->name('reviews.reply');
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {

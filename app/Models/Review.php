@@ -25,6 +25,11 @@ class Review extends Model
 
     public function reactions()
     {
-        return $this->hasMany(Reaction::class);
+        return $this->hasMany(ReviewReaction::class);
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(ReviewReply::class);
     }
 }

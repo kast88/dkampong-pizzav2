@@ -92,8 +92,8 @@ class YouTubeController extends Controller
         );
 
         // fetch reviews
-        $reviews = Review::where('video_id', $id)
-            ->with('user')
+        $reviews = Review::with(['user', 'replies.user'])
+            ->where('video_id', $id)
             ->latest()
             ->get();
 
