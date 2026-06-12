@@ -635,13 +635,13 @@
             <p class="text-xl text-zinc-300">
                 Join thousands of satisfied customers enjoying authentic kampung-style pizza
             </p>
-            <button class="relative inline-block group">
+            <a href="#menu" class="relative inline-block group">
                 <div class="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
                 <div class="relative px-10 py-5 bg-zinc-950 rounded-2xl leading-none flex items-center gap-3 cursor-pointer hover:bg-zinc-900 transition">
                     <span class="text-xl font-bold">Order Your Pizza Now</span>
                     <span class="text-3xl">🍕</span>
                 </div>
-            </button>
+            </a>
         </div>
     </div>
 
