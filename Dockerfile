@@ -4,11 +4,12 @@ FROM php:8.4-fpm
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    zip \
+    unzip \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    zip \
-    unzip
+    libpq-dev
 
 # Install PHP extensions (IMPORTANT: include PostgreSQL)
 RUN docker-php-ext-install \
