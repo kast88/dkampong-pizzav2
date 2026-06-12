@@ -41,4 +41,4 @@ RUN chown -R www-data:www-data /var/www \
 EXPOSE 10000
 
 # Start app + auto migrate
-CMD sh -c "php artisan optimize:clear && php artisan config:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+CMD sh -c "php artisan optimize:clear && php artisan migrate --force && php artisan db:seed --class=AdminUserSeeder --force && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=$PORT"
