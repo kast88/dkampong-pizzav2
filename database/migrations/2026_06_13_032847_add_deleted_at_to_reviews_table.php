@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reviews', function (Blueprint $table) {
-            $table->string('video_id')->nullable()->after('id');
-            $table->dropColumn('post_id');
+            $table->softDeletes();
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

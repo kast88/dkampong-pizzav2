@@ -15,10 +15,26 @@ class ReviewController extends Controller
     {
         $request->validate([
             'content' => 'required|string',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $path = $request->file('image')?->store('reviews', 'public');
+        $path = null;
+
+        if ($request->hasFile('image')) {
+
+            $file = $request->file('image');
+
+            if ($file && $file->isValid()) {
+
+                $filename = time().'_'.$file->getClientOriginalName();
+
+                $destination = public_path('storage/reviews');
+
+                $file->move($destination, $filename);
+
+                $path = 'reviews/'.$filename;
+            }
+        }
 
         Review::create([
             'video_id' => $videoId,
@@ -51,10 +67,6 @@ class ReviewController extends Controller
     {
         if ($review->user_id !== auth()->id()) {
             abort(403);
-        }
-
-        if ($review->image) {
-            Storage::disk('public')->delete($review->image);
         }
 
         $review->delete();

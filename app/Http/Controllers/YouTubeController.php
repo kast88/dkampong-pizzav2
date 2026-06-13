@@ -93,6 +93,14 @@ class YouTubeController extends Controller
 
         // fetch reviews
         $reviews = Review::with(['user', 'replies.user'])
+            ->withCount([
+                'reactions as likes_count' => function ($q) {
+                    $q->where('type', 'like');
+                },
+                'reactions as dislikes_count' => function ($q) {
+                    $q->where('type', 'dislike');
+                }
+            ])
             ->where('video_id', $id)
             ->latest()
             ->get();
