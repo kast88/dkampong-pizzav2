@@ -5,9 +5,7 @@
 
     <nav class="w-full top-0 z-[999] relative backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                🍕 D'Kampong Pizza
-            </div>
+            <a href="{{ route('landing') }}" class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">🍕 D'Kampong Pizza</a>
             <div class="hidden md:flex gap-8 text-zinc-300 font-semibold items-center">
                 <a href="{{ route('landing') }}" class="hover:text-orange-400 transition">Home</a>
                 <a href="#menu" class="text-orange-400 transition">Menu</a>
