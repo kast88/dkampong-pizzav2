@@ -13,12 +13,10 @@ class CartController extends Controller
     {
         $user = auth()->user();
 
-        // 1. Get or create cart
         $cart = Cart::firstOrCreate([
             'user_id' => $user->id
         ]);
 
-        // 2. Check if item exists
         $item = CartItem::where('cart_id', $cart->id)
             ->where('product_id', $product->id)
             ->first();
@@ -34,6 +32,64 @@ class CartController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Added to cart!');
+        return redirect()->route('cart.index')
+            ->with('success', 'Added to cart!');
+    }
+
+    public function index()
+    {
+        $user = auth()->user();
+        $cart = $user->cart;
+
+        if (!$cart) {
+            return view('cart.index', ['cart' => null, 'items' => collect([]), 'total' => 0]);
+        }
+
+        $items = $cart->items()->with('product')->get();
+        $total = $items->sum(fn($item) => $item->product->price * $item->quantity);
+
+        return view('cart.index', compact('cart', 'items', 'total'));
+    }
+
+    public function update(Request $request, CartItem $cartItem)
+    {
+        $this->authorizeCartItem($cartItem);
+
+        $request->validate([
+            'quantity' => ['required', 'integer', 'min:1', 'max:99'],
+        ]);
+
+        $cartItem->update(['quantity' => $request->quantity]);
+
+        return back()->with('success', 'Cart updated.');
+    }
+
+    public function remove(CartItem $cartItem)
+    {
+        $this->authorizeCartItem($cartItem);
+
+        $cartItem->delete();
+
+        return back()->with('success', 'Item removed from cart.');
+    }
+
+    public function destroy()
+    {
+        $user = auth()->user();
+
+        if ($user->cart) {
+            $user->cart->items()->delete();
+            $user->cart->delete();
+        }
+
+        return back()->with('success', 'Cart cleared.');
+    }
+
+    private function authorizeCartItem(CartItem $cartItem)
+    {
+        abort_unless(
+            $cartItem->cart && $cartItem->cart->user_id === auth()->id(),
+            403
+        );
     }
 }
