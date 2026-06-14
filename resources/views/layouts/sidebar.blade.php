@@ -37,21 +37,17 @@
         <span>Users</span>
     </a>
 
-    <!-- Future -->
-    <span class="flex items-center gap-3 rounded-xl px-4 py-3 text-zinc-500 cursor-not-allowed">
+    <a href="{{ route('products.index') }}"
+       class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
         <span>🍕</span>
         <span>Products</span>
-    </span>
+    </a>
 
-    <span class="flex items-center gap-3 rounded-xl px-4 py-3 text-zinc-500 cursor-not-allowed">
+    <a href="{{ route('orders.index') }}"
+       class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
         <span>🛒</span>
         <span>Orders</span>
-    </span>
-
-    <span class="flex items-center gap-3 rounded-xl px-4 py-3 text-zinc-500 cursor-not-allowed">
-        <span>⚙️</span>
-        <span>Settings</span>
-    </span>
+    </a>
 
     @php
         $pendingRequests = \App\Models\PasswordRequest::where('status', 'pending')->count();
@@ -72,6 +68,20 @@
         @endif
 
     </a>
+
+    @if(Auth::check() && Auth::user()->role === 'admin')
+        <a href="{{ route('admin.products.index') }}"
+        class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
+            <span>📋</span>
+            <span>Manage Products</span>
+        </a>
+
+        <a href="{{ route('admin.orders.index') }}"
+        class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
+            <span>📦</span>
+            <span>Manage Orders</span>
+        </a>
+    @endif
 
     @if(Auth::check())
         <form method="POST" action="{{ route('logout') }}">

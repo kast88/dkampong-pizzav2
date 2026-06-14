@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
@@ -111,6 +112,9 @@ class LandingPageController extends Controller
             ],
         ];
 
-        return view('landing', compact('youtubeVideos', 'redditReviews'));
+        $products = Product::where('is_active', true)->get();
+        $categories = $products->pluck('category')->unique()->filter();
+
+        return view('landing', compact('youtubeVideos', 'redditReviews', 'products', 'categories'));
     }
 }

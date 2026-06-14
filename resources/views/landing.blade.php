@@ -25,7 +25,7 @@
                         $cartCount = auth()->user()->cart?->items->sum('quantity') ?? 0;
                     @endphp
 
-                    <a href="#"
+                    <a href="{{ route('cart.index') }}"
                     class="relative px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-full text-white">
 
                         🛒
@@ -38,7 +38,7 @@
                     </a>
 
                     <!-- Orders -->
-                    <a href="#"
+                    <a href="{{ route('orders.index') }}"
                     class="hover:text-orange-400 transition">
                         📦 Orders
                     </a>
@@ -307,205 +307,47 @@
                 <button class="filter-btn active px-6 py-2 rounded-full font-semibold border border-orange-500 bg-orange-500/20 text-orange-400 transition hover:bg-orange-500/30" data-filter="*">
                     All
                 </button>
-                <button class="filter-btn px-6 py-2 rounded-full font-semibold border border-zinc-600 text-zinc-300 transition hover:border-orange-500 hover:text-orange-400" data-filter=".classic">
-                    Classic
-                </button>
-                <button class="filter-btn px-6 py-2 rounded-full font-semibold border border-zinc-600 text-zinc-300 transition hover:border-orange-500 hover:text-orange-400" data-filter=".spicy">
-                    Spicy
-                </button>
-                <button class="filter-btn px-6 py-2 rounded-full font-semibold border border-zinc-600 text-zinc-300 transition hover:border-orange-500 hover:text-orange-400" data-filter=".premium">
-                    Premium
-                </button>
-                <button class="filter-btn px-6 py-2 rounded-full font-semibold border border-zinc-600 text-zinc-300 transition hover:border-orange-500 hover:text-orange-400" data-filter=".vegetarian">
-                    Vegetarian
-                </button>
+                @foreach($categories as $cat)
+                    <button class="filter-btn px-6 py-2 rounded-full font-semibold border border-zinc-600 text-zinc-300 transition hover:border-orange-500 hover:text-orange-400" data-filter=".{{ Str::slug($cat) }}">
+                        {{ $cat }}
+                    </button>
+                @endforeach
             </div>
 
             <!-- Menu Items Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 menu-items-container">
 
-                <!-- Classic Pizzas -->
-                <div class="menu-item all classic group">
+                @foreach($products as $product)
+                <div class="menu-item all {{ Str::slug($product->category) }}">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
-                        <!-- Image Placeholder -->
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                            <img src="/menu/1.png" alt="Ayam Percik Pizza" class="absolute inset-0 w-full h-full object-cover">
+                            @if($product->image)
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="absolute inset-0 w-full h-full object-cover">
+                            @endif
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
                         </div>
-                        <!-- Content -->
                         <div class="p-6">
-                            <h3 class="text-xl font-bold text-white mb-2">Ayam Percik Pizza</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Tender grilled chicken with creamy Kelantan-style percik sauce.</p>
+                            <h3 class="text-xl font-bold text-white mb-2">{{ $product->name }}</h3>
+                            <p class="text-zinc-400 text-sm mb-4">{{ $product->description }}</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">RM 28</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
+                                <span class="text-orange-400 font-bold text-lg">RM {{ number_format($product->price, 0) }}</span>
+                                @auth
+                                    <form method="POST" action="{{ route('cart.add', $product) }}">
+                                        @csrf
+                                        <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
+                                            Add to Cart 🛒
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
+                                        Login to Order
+                                    </a>
+                                @endauth
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="menu-item all classic">
-                    <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
-                        <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                            <img src="/menu/2.png" alt="Ikan Bilis Crunch" class="absolute inset-0 w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-white mb-2">Ikan Bilis Crunch</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Crispy anchovies, onions, chili flakes, and mozzarella cheese.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">RM 20</span>
-                                {{-- <form method="POST" action="{{ route('cart.add', $product->id) }}"> --}}
-                                <form method="POST" action="#">
-                                    @csrf
-
-                                    <button type="submit"
-                                        class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                        Add to Cart 🛒
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Spicy Pizzas -->
-                <div class="menu-item all spicy">
-                    <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
-                        <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                            <img src="/menu/3.png" alt="Sambal Udang Village" class="absolute inset-0 w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-white mb-2">Sambal Udang Village</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Juicy prawns topped with spicy homemade sambal and melted cheese.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">RM 25</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="menu-item all spicy">
-                    <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
-                        <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                            <img src="/menu/4.png" alt="Pedas Giler Kampung" class="absolute inset-0 w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-white mb-2">Pedas Giler Kampung</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Bird's eye chilies, spicy sambal, chicken slices, and extra cheese.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">RM 40</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Premium Pizzas -->
-                <div class="menu-item all premium">
-                    <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
-                        <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                            <img src="/menu/5.png" alt="D'Kampong Signature" class="absolute inset-0 w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-white mb-2">D'Kampong Signature</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Chicken rendang, sambal, mushrooms, onions, and premium cheese blend.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">RM 45</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="menu-item all premium">
-                    <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
-                        <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                            <img src="/menu/6.png" alt="Rendang Tok Special" class="absolute inset-0 w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-white mb-2">Rendang Tok Special</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Traditional beef rendang with mozzarella and fresh herbs.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">RM 30</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="menu-item all premium">
-                    <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
-                        <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                            <img src="/menu/7.png" alt="Sotong Bakar Pizza" class="absolute inset-0 w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-white mb-2">Sotong Bakar Pizza</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Grilled squid, smoky sambal, mozzarella, and fresh herbs.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">RM 40</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Vegetarian Pizzas -->
-                <div class="menu-item all vegetarian">
-                    <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
-                        <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                            <img src="/menu/8.png" alt="Ulam Garden Pizza" class="absolute inset-0 w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-white mb-2">Ulam Garden Pizza</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Fresh vegetables, herbs, cherry tomatoes, and garlic cream sauce.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">RM 20</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="menu-item all vegetarian">
-                    <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
-                        <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                            <img src="/menu/9.png" alt="Cendawan Hutan" class="absolute inset-0 w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-white mb-2">Cendawan Hutan</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Mixed mushrooms, garlic butter, herbs, and creamy mozzarella.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-orange-400 font-bold text-lg">RM 25</span>
-                                <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                    Order
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
 
             </div>
         </div>
