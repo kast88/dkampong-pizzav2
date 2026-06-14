@@ -2,20 +2,25 @@
 
 @section('content')
 <div class="min-h-screen bg-zinc-950">
-    <nav class="w-full backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800">
+
+    <nav class="w-full top-0 z-[999] relative backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <a href="{{ route('landing') }}" class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">🍕 D'Kampong Pizza</a>
-            <div class="flex gap-4">
-                <a href="{{ route('products.index') }}" class="text-zinc-300 hover:text-orange-400 transition">Menu</a>
-                <a href="{{ route('cart.index') }}" class="text-zinc-300 hover:text-orange-400 transition">
-                    🛒 Cart
-                    @auth
-                        @php $cartCount = auth()->user()->cart?->items->sum('quantity') ?? 0; @endphp
+            <div class="hidden md:flex gap-8 text-zinc-300 font-semibold items-center">
+                <a href="{{ route('landing') }}" class="hover:text-orange-400 transition">Home</a>
+                <a href="{{ route('products.index') }}" class="hover:text-orange-400 transition">Menu </a>
+                @auth
+                    @php $cartCount = auth()->user()->cart?->items->sum('quantity') ?? 0; @endphp
+                    <a href="{{ route('cart.index') }}" class="relative px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-full text-white">
+                        🛒
                         @if($cartCount > 0)
-                            <span class="text-xs bg-red-500 px-1.5 py-0.5 rounded-full">{{ $cartCount }}</span>
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ $cartCount }}</span>
                         @endif
-                    @endauth
-                </a>
+                    </a>
+                    <a href="{{ route('orders.index') }}" class="text-orange-400 transition">📦 Orders</a>
+                @else
+                    <a href="{{ route('login') }}" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition">Login</a>
+                @endauth
             </div>
         </div>
     </nav>
