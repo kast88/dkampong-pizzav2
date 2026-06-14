@@ -22,8 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('password_requests', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('password_requests');
     }
 };

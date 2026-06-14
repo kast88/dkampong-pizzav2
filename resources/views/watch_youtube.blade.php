@@ -422,8 +422,9 @@
     .review-content {
         margin-top: 14px;
         color: #d4d4d8;
-        font-size: 14px;
-        line-height: 1.6;
+        font-size: 15.5px;
+        line-height: 1.8;
+        letter-spacing: 0.2px;
     }
 
     /* IMAGE */
@@ -525,6 +526,25 @@
         color: #71717a;
         border: 1px dashed #3f3f46;
         border-radius: 16px;
+    }
+
+    .review-replies {
+        margin-top: 10px;
+        margin-left: 45px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .review-reply {
+        font-size: 12.5px;
+        color: #a1a1aa;
+        line-height: 1.5;
+    }
+
+    .review-reply b {
+        color: #d4d4d8;
+        margin-right: 4px;
     }
 
         /* MOBILE */
@@ -664,7 +684,7 @@
                     required></textarea><br><br>
 
             <input type="file"
-                name="image"
+                name="image" accept="image/*"
                 class="review-file">
 
             <br><br><button class="review-submit-btn">
@@ -763,18 +783,22 @@
                 {{ $review->content }}
             </div>
 
-            @if($review->replies->count())
-                @foreach($review->replies as $reply)
-                    <div class="ml-10 mt-2 text-sm text-zinc-400">
-                        <b>{{ $reply->user->name }}</b>: {{ $reply->content }}
-                    </div>
-                @endforeach
-            @endif
-
             <!-- IMAGE -->
             @if($review->image)
                 <img src="{{ asset('storage/'.$review->image) }}"
                     class="review-image">
+            @endif
+
+            <!-- REPLIES -->
+            @if($review->replies->count())
+                <div class="review-replies">
+                    @foreach($review->replies as $reply)
+                        <div class="review-reply">
+                            <b>{{ $reply->user->name }}</b>:
+                            <span>{{ $reply->content }}</span>
+                        </div>
+                    @endforeach
+                </div>
             @endif
 
             <!-- ACTIONS -->
@@ -783,12 +807,16 @@
                 <form method="POST" action="{{ route('reviews.react', $review->id) }}">
                     @csrf
                     <input type="hidden" name="type" value="like">
-                    <button class="review-btn">👍 Like</button>
+                    <button class="review-btn">
+                        👍 {{ $review->likes_count }}
+                    </button>
                 </form>
                 <form method="POST" action="{{ route('reviews.react', $review->id) }}">
                     @csrf
                     <input type="hidden" name="type" value="dislike">
-                    <button class="review-btn">👎 Dislike</button>
+                    <button class="review-btn">
+                        👎 {{ $review->dislikes_count }}
+                    </button>
                 </form>
                 <form method="POST" action="{{ route('reviews.reply', $review->id) }}" class="mt-3 flex gap-2">
                     @csrf
@@ -826,7 +854,9 @@
                 <textarea name="content" id="editContent"
                         class="review-textarea"></textarea>
 
-                <button class="review-submit-btn mt-3">Save</button>
+                <div style="text-align:center;">
+                    <button class="review-submit-btn mt-3">Save</button>
+                </div>
             </form>
 
         </div>
