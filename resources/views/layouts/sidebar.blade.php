@@ -37,7 +37,7 @@
         <span>Users</span>
     </a>
 
-    <a href="{{ route('products.index') }}"
+    {{-- <a href="{{ route('products.index') }}"
        class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
         <span>🍕</span>
         <span>Products</span>
@@ -47,7 +47,7 @@
        class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
         <span>🛒</span>
         <span>Orders</span>
-    </a>
+    </a> --}}
 
     @php
         $pendingRequests = \App\Models\PasswordRequest::where('status', 'pending')->count();

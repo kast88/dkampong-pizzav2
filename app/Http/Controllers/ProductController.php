@@ -40,19 +40,41 @@ class ProductController extends Controller
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'category' => ['nullable', 'string', 'max:100'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'is_active' => ['boolean'],
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+        $path = null;
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+
+            $file = $request->file('image');
+
+            if ($file && $file->isValid()) {
+
+                $filename = time() . '_' . $file->getClientOriginalName();
+
+                $destination = public_path('storage/products');
+
+                // Create folder if it doesn't exist
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+
+                $file->move($destination, $filename);
+
+                $path = 'products/' . $filename;
+            }
         }
 
+        $validated['image'] = $path;
         $validated['is_active'] = $request->boolean('is_active', true);
 
         Product::create($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created.');
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Product created.');
     }
 
     public function edit(Product $product)
@@ -71,7 +93,7 @@ class ProductController extends Controller
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'category' => ['nullable', 'string', 'max:100'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'is_active' => ['boolean'],
             'remove_image' => ['boolean'],
         ]);
@@ -81,11 +103,34 @@ class ProductController extends Controller
             $validated['image'] = null;
         }
 
-        if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+
+            $file = $request->file('image');
+
+            if ($file && $file->isValid()) {
+
+                // Delete old image
+                if ($product->image) {
+
+                    $oldImage = public_path('storage/' . $product->image);
+
+                    if (file_exists($oldImage)) {
+                        unlink($oldImage);
+                    }
+                }
+
+                $filename = time() . '_' . $file->getClientOriginalName();
+
+                $destination = public_path('storage/products');
+
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+
+                $file->move($destination, $filename);
+
+                $validated['image'] = 'products/' . $filename;
             }
-            $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
         $validated['is_active'] = $request->boolean('is_active', true);
