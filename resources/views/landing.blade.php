@@ -316,7 +316,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 menu-items-container">
 
                 @foreach($products as $product)
-                <div class="menu-item all {{ Str::slug($product->category) }}">
+                <div id="product-{{ $product->id }}" class="menu-item all {{ Str::slug($product->category) }}">
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
                             @if($product->image)
@@ -327,20 +327,53 @@
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-white mb-2">{{ $product->name }}</h3>
                             <p class="text-zinc-400 text-sm mb-4">{{ $product->description }}</p>
-                            <div class="flex justify-between items-center">
+                            <div class="flex justify-between items-start gap-3">
                                 <span class="text-orange-400 font-bold text-lg">RM {{ number_format($product->price, 0) }}</span>
-                                @auth
-                                    <form method="POST" action="{{ route('cart.add', $product) }}">
-                                        @csrf
-                                        <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                            Add to Cart 🛒
-                                        </button>
-                                    </form>
-                                @else
-                                    <a href="{{ route('login') }}" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
-                                        Login to Order
+                                <div class="flex flex-wrap items-center gap-2">
+                                    @auth
+                                        <form method="POST" action="{{ route('cart.add', $product) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
+                                                Add to Cart 🛒
+                                            </button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('login') }}" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition text-sm">
+                                            Login to Order
+                                        </a>
+                                    @endauth
+                                    <button type="button" class="share-toggle px-4 py-2 border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 rounded-lg font-semibold transition text-sm text-white"
+                                        data-product-id="{{ $product->id }}"
+                                        data-product-name="{{ $product->name }}"
+                                        data-product-price="{{ number_format($product->price, 0) }}"
+                                    >
+                                        Share
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="share-card hidden mt-4 rounded-2xl border border-zinc-700 bg-zinc-950/90 p-4 text-sm text-white shadow-xl">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p class="font-semibold">Share "{{ $product->name }}"</p>
+                                        <p class="text-zinc-400 text-xs">Choose a channel to send this pizza.</p>
+                                    </div>
+                                    <button type="button" class="share-close text-zinc-400 hover:text-white text-2xl leading-none">&times;</button>
+                                </div>
+                                <div class="mt-4 grid grid-cols-2 gap-2">
+                                    <a href="#" class="share-action inline-flex items-center justify-center rounded-xl border border-emerald-500 bg-emerald-500/10 px-3 py-2 text-emerald-300 text-center text-xs font-semibold transition hover:bg-emerald-500/20" data-channel="whatsapp" target="_blank" rel="noreferrer">
+                                        WhatsApp
                                     </a>
-                                @endauth
+                                    <a href="#" class="share-action inline-flex items-center justify-center rounded-xl border border-blue-500 bg-blue-500/10 px-3 py-2 text-blue-300 text-center text-xs font-semibold transition hover:bg-blue-500/20" data-channel="facebook" target="_blank" rel="noreferrer">
+                                        Facebook
+                                    </a>
+                                    <a href="#" class="share-action inline-flex items-center justify-center rounded-xl border border-sky-500 bg-sky-500/10 px-3 py-2 text-sky-300 text-center text-xs font-semibold transition hover:bg-sky-500/20" data-channel="email" target="_blank" rel="noreferrer">
+                                        Email
+                                    </a>
+                                    <button type="button" class="copy-link-btn inline-flex items-center justify-center rounded-xl border border-zinc-600 bg-zinc-900 px-3 py-2 text-zinc-200 text-center text-xs font-semibold transition hover:bg-zinc-800">
+                                        Copy Link
+                                    </button>
+                                </div>
+                                <p class="copy-feedback mt-3 hidden text-xs text-emerald-400">Link copied to clipboard!</p>
                             </div>
                         </div>
                     </div>
@@ -568,6 +601,69 @@
                         }
                     }
                 });
+            });
+        });
+
+        const shareButtons = document.querySelectorAll('.share-toggle');
+        const copyButtons = document.querySelectorAll('.copy-link-btn');
+
+        function buildShareLinks(productId, productName, productPrice) {
+            const pageUrl = `${window.location.origin}${window.location.pathname}#product-${productId}`;
+            const message = `Check out ${productName} for RM ${productPrice} at D'Kampong Pizza! ${pageUrl}`;
+            return {
+                whatsapp: `https://wa.me/?text=${encodeURIComponent(message)}`,
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(message)}`,
+                email: `mailto:?subject=${encodeURIComponent(`Try ${productName} from D'Kampong Pizza`)}&body=${encodeURIComponent(message)}`,
+                link: pageUrl,
+            };
+        }
+
+        copyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const link = this.dataset.copyLink || window.location.href;
+                const feedback = this.closest('.share-card').querySelector('.copy-feedback');
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(link).then(() => {
+                        if (feedback) {
+                            feedback.classList.remove('hidden');
+                            setTimeout(() => feedback.classList.add('hidden'), 1600);
+                        }
+                    });
+                } else {
+                    window.prompt('Copy this link', link);
+                }
+            });
+        });
+
+        shareButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.p-6').querySelector('.share-card');
+                if (!card) return;
+
+                const productId = this.dataset.productId;
+                const productName = this.dataset.productName;
+                const productPrice = this.dataset.productPrice;
+                const links = buildShareLinks(productId, productName, productPrice);
+
+                card.querySelectorAll('.share-action').forEach(action => {
+                    const channel = action.dataset.channel;
+                    action.href = links[channel] || '#';
+                });
+
+                const copyButton = card.querySelector('.copy-link-btn');
+                if (copyButton) {
+                    copyButton.dataset.copyLink = links.link;
+                }
+
+                card.classList.toggle('hidden');
+            });
+        });
+
+        document.querySelectorAll('.share-close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                const card = this.closest('.share-card');
+                if (card) card.classList.add('hidden');
             });
         });
     });
