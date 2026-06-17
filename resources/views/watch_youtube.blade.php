@@ -233,6 +233,19 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
+        .hidden {
+            display: none !important;
+        }
+
+        .copy-feedback {
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .copy-feedback.visible {
+            opacity: 1;
+        }
+
     .review-form-card {
         background: linear-gradient(135deg, #18181b, #0f0f12);
         border: 1px solid #27272a;
@@ -452,24 +465,113 @@
         flex-wrap: wrap;
     }
 
-    .review-btn {
-        background: #27272a;
-        border: 1px solid #3f3f46;
-        color: #a1a1aa;
-        padding: 6px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: 0.25s;
-    }
+        .share-btn {
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+            border: 1px solid rgba(20, 184, 166, 0.35);
+            box-shadow: 0 16px 35px rgba(20, 184, 166, 0.16);
+            color: white;
+        }
 
-    .review-btn:hover {
-        background: #3f3f46;
-        color: white;
-        border-color: rgba(249, 115, 22, 0.4);
-    }
+        .share-btn:hover {
+            background: linear-gradient(135deg, #0f766e, #14b8a6);
+        }
 
-    .review-actions {
+        .comment-btn {
+            background: #3b82f6;
+        }
+
+        .share-card {
+            display: none;
+            max-width: 760px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 22px;
+            border-radius: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(15, 23, 42, 0.96);
+            box-shadow: 0 30px 80px rgba(15, 23, 42, 0.55);
+        }
+
+        .share-card:not(.hidden) {
+            display: block;
+        }
+
+        .share-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .share-actions {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .share-action,
+        .copy-link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            text-transform: none;
+        }
+
+        .share-action {
+            border: 1px solid transparent;
+        }
+
+        .share-action.whatsapp {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.35);
+            color: #a7f3d0;
+        }
+
+        .share-action.facebook {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.35);
+            color: #bfdbfe;
+        }
+
+        .share-action.email {
+            background: rgba(14, 165, 233, 0.12);
+            border-color: rgba(14, 165, 233, 0.35);
+            color: #e0f2fe;
+        }
+
+        .share-action:hover,
+        .copy-link-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.95;
+        }
+
+        .copy-link-btn {
+            background: #111827;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+        }
+
+        .copy-feedback {
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .copy-feedback.visible {
+            opacity: 1;
+        }
+
+        .review-btn:hover {
+            background: #3f3f46;
+            color: white;
+            border-color: rgba(249, 115, 22, 0.4);
         display: flex;
         gap: 8px;
         align-items: center;
@@ -651,12 +753,40 @@
                     ▶ Open in YouTube
                 </a>
 
+                <button type="button" id="shareButton" class="btn share-btn">
+                    🔗 Share Video
+                </button>
+
                 <button onclick="openCommentsModal()"
-                        class="btn"
-                        style="background:#3b82f6;">
+                        class="btn comment-btn">
                     💬 YouTube Comments
                 </button>
 
+            </div>
+
+            <div id="videoShareCard" class="share-card hidden mt-4">
+                <div class="share-header">
+                    <div>
+                        <p class="font-semibold text-white text-lg">Share this video</p>
+                        <p class="text-zinc-400 text-sm">Send the video to friends or copy the link.</p>
+                    </div>
+                    <button type="button" id="closeShareCard" class="share-close text-zinc-400 hover:text-white text-2xl leading-none">&times;</button>
+                </div>
+                <div class="share-actions">
+                    <a href="#" class="share-action whatsapp" data-channel="whatsapp" target="_blank" rel="noreferrer">
+                        WhatsApp
+                    </a>
+                    <a href="#" class="share-action facebook" data-channel="facebook" target="_blank" rel="noreferrer">
+                        Facebook
+                    </a>
+                    <a href="#" class="share-action email" data-channel="email" target="_blank" rel="noreferrer">
+                        Email
+                    </a>
+                    <button type="button" id="copyShareLink" class="copy-link-btn">
+                        Copy Link
+                    </button>
+                </div>
+                <p id="copyFeedback" class="copy-feedback mt-3 hidden">Link copied to clipboard!</p>
             </div>
 
         </div>
@@ -957,6 +1087,73 @@ document.getElementById('editModal').addEventListener('click', function (e) {
         closeEditModal();
     }
 });
+
+(function () {
+    const shareButton = document.getElementById('shareButton');
+    const shareCard = document.getElementById('videoShareCard');
+    const closeShareCard = document.getElementById('closeShareCard');
+    const shareActions = document.querySelectorAll('.share-action');
+    const copyButton = document.getElementById('copyShareLink');
+    const copyFeedback = document.getElementById('copyFeedback');
+
+    if (!shareButton || !shareCard) {
+        return;
+    }
+
+    function buildShareLinks() {
+        const pageUrl = `${window.location.origin}${window.location.pathname}`;
+        const videoTitle = document.querySelector('.video-title')?.textContent.trim() || 'D\'Kampong Pizza Video';
+        const message = `Check out this D'Kampong Pizza video: ${videoTitle} ${pageUrl}`;
+
+        return {
+            whatsapp: `https://wa.me/?text=${encodeURIComponent(message)}`,
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(message)}`,
+            email: `mailto:?subject=${encodeURIComponent(`Watch this video from D'Kampong Pizza`)}&body=${encodeURIComponent(message)}`,
+            link: pageUrl,
+        };
+    }
+
+    function toggleShareCard() {
+        const links = buildShareLinks();
+        shareActions.forEach(action => {
+            const channel = action.dataset.channel;
+            action.href = links[channel] || '#';
+        });
+
+        if (copyButton) {
+            copyButton.dataset.copyLink = links.link;
+        }
+
+        shareCard.classList.toggle('hidden');
+    }
+
+    function closeShare() {
+        shareCard.classList.add('hidden');
+    }
+
+    shareButton.addEventListener('click', toggleShareCard);
+    closeShareCard?.addEventListener('click', closeShare);
+
+    if (copyButton) {
+        copyButton.addEventListener('click', function () {
+            const link = this.dataset.copyLink || window.location.href;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link).then(() => {
+                    copyFeedback?.classList.add('visible');
+                    copyFeedback?.classList.remove('hidden');
+                    setTimeout(() => {
+                        if (copyFeedback) {
+                            copyFeedback.classList.remove('visible');
+                            copyFeedback.classList.add('hidden');
+                        }
+                    }, 1600);
+                });
+            } else {
+                window.prompt('Copy this link', link);
+            }
+        });
+    }
+})();
 
 </script>
 
