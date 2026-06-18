@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -54,7 +55,7 @@ class ProductController extends Controller
 
                 $filename = time() . '_' . $file->getClientOriginalName();
 
-                $destination = public_path('storage/products');
+                $destination = public_path('menus');
 
                 // Create folder if it doesn't exist
                 if (!file_exists($destination)) {
@@ -63,7 +64,7 @@ class ProductController extends Controller
 
                 $file->move($destination, $filename);
 
-                $path = 'products/' . $filename;
+                $path = 'menus/' . $filename;
             }
         }
 
@@ -99,7 +100,14 @@ class ProductController extends Controller
         ]);
 
         if ($request->boolean('remove_image') && $product->image) {
-            Storage::disk('public')->delete($product->image);
+            if (Str::startsWith($product->image, ['img/', 'menus/'])) {
+                $oldImage = public_path($product->image);
+                if (file_exists($oldImage)) {
+                    unlink($oldImage);
+                }
+            } else {
+                Storage::disk('public')->delete($product->image);
+            }
             $validated['image'] = null;
         }
 
@@ -111,8 +119,11 @@ class ProductController extends Controller
 
                 // Delete old image
                 if ($product->image) {
-
-                    $oldImage = public_path('storage/' . $product->image);
+                    if (Str::startsWith($product->image, ['img/', 'menus/'])) {
+                        $oldImage = public_path($product->image);
+                    } else {
+                        $oldImage = public_path('storage/' . $product->image);
+                    }
 
                     if (file_exists($oldImage)) {
                         unlink($oldImage);
@@ -121,7 +132,7 @@ class ProductController extends Controller
 
                 $filename = time() . '_' . $file->getClientOriginalName();
 
-                $destination = public_path('storage/products');
+                $destination = public_path('menus');
 
                 if (!file_exists($destination)) {
                     mkdir($destination, 0755, true);
@@ -129,7 +140,7 @@ class ProductController extends Controller
 
                 $file->move($destination, $filename);
 
-                $validated['image'] = 'products/' . $filename;
+                $validated['image'] = 'menus/' . $filename;
             }
         }
 
@@ -145,7 +156,14 @@ class ProductController extends Controller
         $this->authorizeAdmin();
 
         if ($product->image) {
-            Storage::disk('public')->delete($product->image);
+            if (Str::startsWith($product->image, ['img/', 'menus/'])) {
+                $oldImage = public_path($product->image);
+                if (file_exists($oldImage)) {
+                    unlink($oldImage);
+                }
+            } else {
+                Storage::disk('public')->delete($product->image);
+            }
         }
 
         $product->delete();

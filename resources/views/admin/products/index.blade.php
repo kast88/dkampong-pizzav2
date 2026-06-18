@@ -55,7 +55,7 @@
                             <td class="px-6 py-4 text-zinc-400">#{{ $product->id }}</td>
                             <td class="px-6 py-4">
                                 @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" class="w-10 h-10 rounded-lg object-cover">
+                                    <img src="{{ asset(Str::startsWith($product->image, ['img/', 'menus/']) ? $product->image : 'storage/' . $product->image) }}" class="w-10 h-10 rounded-lg object-cover">
                                 @else
                                     <div class="w-10 h-10 rounded-lg bg-zinc-700 flex items-center justify-center text-xs">🍕</div>
                                 @endif
