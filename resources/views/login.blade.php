@@ -101,6 +101,18 @@
                             </p>
                         </div>
 
+                        @if(session('success'))
+                            <div style="
+                                background:#16a34a;
+                                color:white;
+                                padding:15px;
+                                border-radius:12px;
+                                margin-bottom:20px;
+                            ">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
                         @if ($errors->any())
                             <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                                 <div class="flex items-start gap-3">
