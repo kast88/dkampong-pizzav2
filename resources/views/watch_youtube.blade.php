@@ -680,6 +680,36 @@
 
 <div class="container">
 
+    @if(session('success'))
+        <div style="
+            background:#16a34a;
+            color:white;
+            padding:15px;
+            border-radius:12px;
+            margin-bottom:20px;
+        ">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div style="
+            background:#dc2626;
+            color:white;
+            padding:15px;
+            border-radius:12px;
+            margin-bottom:20px;
+            border:1px solid #ef4444;
+        ">
+            <strong>Validation Error:</strong>
+            <ul style="margin-top:8px; padding-left:20px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <!-- VIDEO -->
     <div class="video-card">
 
