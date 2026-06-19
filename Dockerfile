@@ -34,11 +34,13 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Permissions
-RUN chown -R www-data:www-data /var/www \
+RUN mkdir -p storage/app/public/products \
+    && mkdir -p storage/app/public/reviews \
+    && chown -R www-data:www-data /var/www \
     && chmod -R 775 storage bootstrap/cache
 
 # Render port (important)
 EXPOSE 10000
 
 # Start app + auto migrate
-CMD sh -c "php artisan optimize:clear && php artisan migrate --force && php artisan db:seed --class=AdminUserSeeder --force && php artisan db:seed --class=ProductSeeder --force && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=$PORT"
+CMD sh -c "php artisan optimize:clear && php artisan storage:link || true && php artisan migrate --force && php artisan db:seed --class=AdminUserSeeder --force && php artisan db:seed --class=ProductSeeder --force && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=$PORT"
