@@ -85,7 +85,7 @@ if ($request->hasFile('image') && $request->file('image')->isValid()) {
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'category' => ['nullable', 'string', 'max:100'],
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',
             'is_active' => ['boolean'],
             'remove_image' => ['boolean'],
         ]);
