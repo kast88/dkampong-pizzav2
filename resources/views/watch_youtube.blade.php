@@ -649,17 +649,6 @@
         margin-right: 4px;
     }
 
-    .react-btn {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
-        border: none;
-        box-shadow: 0 10px 25px rgba(34,197,94,0.25);
-    }
-
-    .react-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 35px rgba(34,197,94,0.35);
-    }
-
         /* MOBILE */
         @media(max-width:768px){
 
@@ -802,20 +791,6 @@
                         class="btn comment-btn">
                     💬 YouTube Comments
                 </button>
-
-                @if(auth()->check())
-                <form method="POST" action="{{ route('post.react', $post->id) }}">
-                    @csrf
-
-                    <button type="submit" class="btn react-btn">
-                        👍 React {{ $post->reactions_count }}
-                    </button>
-                </form>
-                @else
-                <a href="{{ route('login') }}" class="btn react-btn">
-                    🔒 Login to React
-                </a>
-                @endif
 
             </div>
 

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-use App\Models\PostReaction;
 use App\Models\Review;
 use Illuminate\Support\Facades\Http;
 
@@ -87,10 +86,10 @@ class YouTubeController extends Controller
         // find or create post
         $post = Post::firstOrCreate(
             ['youtube_video_id' => $id],
-            ['user_id' => auth()->id() ?? 1]
+            [
+                'user_id' => auth()->id() ?? 1,
+            ]
         );
-
-        $post->loadCount('reactions');
 
         // fetch reviews
         $reviews = Review::with(['user', 'replies.user'])
@@ -115,28 +114,5 @@ class YouTubeController extends Controller
             'nextPageToken' => $data['nextPageToken'] ?? null,
             'prevPageToken' => $data['prevPageToken'] ?? null
         ]);
-    }
-
-    public function react(Post $post)
-    {
-        $userId = auth()->id();
-
-        $existing = PostReaction::where('post_id', $post->id)
-            ->where('user_id', $userId)
-            ->first();
-
-        if ($existing) {
-            // UNLIKE
-            $existing->delete();
-        } else {
-            // LIKE
-            PostReaction::create([
-                'post_id' => $post->id,
-                'user_id' => $userId,
-                'type' => 'like'
-            ]);
-        }
-
-        return back();
     }
 }

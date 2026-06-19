@@ -54,9 +54,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
-
-    public function postReactions()
-    {
-        return $this->hasMany(PostReaction::class);
-    }
 }
