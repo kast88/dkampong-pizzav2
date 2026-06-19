@@ -157,7 +157,7 @@ class ProductController extends Controller
     {
         $this->authorizeAdmin();
 
-        $products = Product::latest()->get();
+        $products = Product::orderBy('id', 'desc')->get();
 
         return view('admin.products.index', compact('products'));
     }
