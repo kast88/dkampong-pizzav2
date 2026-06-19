@@ -44,30 +44,22 @@ class ProductController extends Controller
             'is_active' => ['boolean'],
         ]);
 
-        $path = null;
+if ($request->hasFile('image') && $request->file('image')->isValid()) {
 
-        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+    $image = $request->file('image');
 
-            $file = $request->file('image');
+    $filename = time() . '_' . $image->getClientOriginalName();
 
-            if ($file && $file->isValid()) {
+    $destination = public_path('products');
 
-                $filename = time() . '_' . $file->getClientOriginalName();
+    if (!file_exists($destination)) {
+        mkdir($destination, 0755, true);
+    }
 
-                $destination = public_path('storage/products');
+    $image->move($destination, $filename);
 
-                // Create folder if it doesn't exist
-                if (!file_exists($destination)) {
-                    mkdir($destination, 0755, true);
-                }
-
-                $file->move($destination, $filename);
-
-                $path = 'products/' . $filename;
-            }
-        }
-
-        $validated['image'] = $path;
+    $validated['image'] = 'products/' . $filename;
+}
         $validated['is_active'] = $request->boolean('is_active', true);
 
         Product::create($validated);
@@ -98,40 +90,37 @@ class ProductController extends Controller
             'remove_image' => ['boolean'],
         ]);
 
-        if ($request->boolean('remove_image') && $product->image) {
-            Storage::disk('public')->delete($product->image);
-            $validated['image'] = null;
+if ($product->image) {
+    $oldPath = public_path($product->image);
+    if (file_exists($oldPath)) {
+        unlink($oldPath);
+    }
+}
+
+if ($request->hasFile('image') && $request->file('image')->isValid()) {
+
+    $image = $request->file('image');
+
+    // delete old image
+    if ($product->image) {
+        $oldPath = public_path($product->image);
+        if (file_exists($oldPath)) {
+            unlink($oldPath);
         }
+    }
 
-        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+    $filename = time() . '_' . $image->getClientOriginalName();
 
-            $file = $request->file('image');
+    $destination = public_path('products');
 
-            if ($file && $file->isValid()) {
+    if (!file_exists($destination)) {
+        mkdir($destination, 0755, true);
+    }
 
-                // Delete old image
-                if ($product->image) {
+    $image->move($destination, $filename);
 
-                    $oldImage = public_path('storage/' . $product->image);
-
-                    if (file_exists($oldImage)) {
-                        unlink($oldImage);
-                    }
-                }
-
-                $filename = time() . '_' . $file->getClientOriginalName();
-
-                $destination = public_path('storage/products');
-
-                if (!file_exists($destination)) {
-                    mkdir($destination, 0755, true);
-                }
-
-                $file->move($destination, $filename);
-
-                $validated['image'] = 'products/' . $filename;
-            }
-        }
+    $validated['image'] = 'products/' . $filename;
+}
 
         $validated['is_active'] = $request->boolean('is_active', true);
 
@@ -144,9 +133,12 @@ class ProductController extends Controller
     {
         $this->authorizeAdmin();
 
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
-        }
+if ($product->image) {
+    $oldPath = public_path($product->image);
+    if (file_exists($oldPath)) {
+        unlink($oldPath);
+    }
+}
 
         $product->delete();
 

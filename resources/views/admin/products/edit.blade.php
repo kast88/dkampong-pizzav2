@@ -62,7 +62,7 @@
                     <label class="block text-sm font-medium text-zinc-300 mb-2">Image</label>
                     @if($product->image)
                         <div class="flex items-center gap-4 mb-3">
-                            <img src="{{ asset('storage/' . $product->image) }}" class="w-20 h-20 rounded-xl object-cover">
+                            <img src="{{ asset($product->image) }}" class="w-20 h-20 rounded-xl object-cover">
                             <label class="flex items-center gap-2 text-sm text-red-400 cursor-pointer">
                                 <input type="checkbox" name="remove_image" value="1"> Remove image
                             </label>
