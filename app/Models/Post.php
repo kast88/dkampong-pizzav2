@@ -28,4 +28,9 @@ class Post extends Model
         return 'video_id';
     }
 
+    public function reactions()
+    {
+        return $this->hasMany(PostReaction::class);
+    }
+
 }
