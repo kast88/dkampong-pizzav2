@@ -320,7 +320,7 @@
                     <div class="rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50 hover:border-orange-500/50 transition-all transform hover:scale-105">
                         <div class="w-full h-64 bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center relative overflow-hidden">
                             @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="absolute inset-0 w-full h-full object-cover">
+                                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="absolute inset-0 w-full h-full object-cover">
                             @endif
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
                         </div>
