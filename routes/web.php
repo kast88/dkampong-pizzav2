@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/menu', [ProductController::class, 'index'])->name('products.index');
     Route::get('/menu/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::post('/post/{post}/react', [YouTubeController::class, 'react'])->name('post.react');
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {

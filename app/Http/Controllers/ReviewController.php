@@ -15,7 +15,7 @@ class ReviewController extends Controller
     {
         $request->validate([
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2000',
         ]);
 
         $path = null;
