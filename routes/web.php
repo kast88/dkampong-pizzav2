@@ -24,7 +24,7 @@ Route::get('/forgot-password', [PasswordRequestController::class, 'create'])->na
 Route::post('/forgot-password', [PasswordRequestController::class, 'store'])->name('password.request.store');
 Route::get('/video/{id}', [YouTubeController::class, 'watch'])->name('video.watch');
 
-Route::get('/menus', [ProductController::class, 'index'])->name('products.index');
+Route::get('/menu', [ProductController::class, 'index'])->name('products.index');
 Route::get('/menu/{product}', [ProductController::class, 'show'])->name('products.show');
 
 Route::middleware('auth')->group(function () {
