@@ -25,7 +25,12 @@ class Post extends Model
 
     public function getRouteKeyName()
     {
-        return 'video_id';
+        return 'id';
+    }
+
+    public function reactions()
+    {
+        return $this->hasMany(PostReaction::class);
     }
 
 }

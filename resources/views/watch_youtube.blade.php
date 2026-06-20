@@ -568,13 +568,57 @@
             opacity: 1;
         }
 
-        .review-btn:hover {
-            background: #3f3f46;
-            color: white;
-            border-color: rgba(249, 115, 22, 0.4);
-        display: flex;
-        gap: 8px;
+    .review-btn.like {
+        color: #22c55e;
+        border-color: rgba(34, 197, 94, 0.25);
+    }
+
+    .review-btn.like:hover {
+        background: rgba(34, 197, 94, 0.08);
+    }
+
+    .review-btn.dislike {
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.25);
+    }
+
+    .review-btn.dislike:hover {
+        background: rgba(239, 68, 68, 0.08);
+    }
+
+    .review-btn.reply {
+        color: #f97316;
+        border-color: rgba(249, 115, 22, 0.25);
+    }
+
+    .review-btn.reply:hover {
+        background: rgba(249, 115, 22, 0.10);
+    }
+
+    .review-btn {
+        display: inline-flex;
         align-items: center;
+        gap: 6px;
+
+        padding: 6px 12px;
+        border-radius: 999px;
+
+        font-size: 13px;
+        font-weight: 500;
+
+        border: 1px solid #2f2f2f;
+        background: #111827;
+        color: #e5e7eb;
+
+        cursor: pointer;
+
+        transition: all 0.2s ease;
+    }
+
+    .review-btn:hover {
+        background: #1f2937;
+        border-color: rgba(249, 115, 22, 0.35);
+        transform: none;
     }
 
     /* Base button style */
@@ -792,6 +836,28 @@
                     💬 YouTube Comments
                 </button>
 
+                @auth
+                <form method="POST" action="{{ route('posts.react', $post->id) }}">
+                    @csrf
+                    <input type="hidden" name="type" value="like">
+
+                    <button class="btn"
+                        style="background: {{ $userReaction == 'like' ? '#22c55e' : '#334155' }}">
+                        👍 {{ $post->likes_count }}
+                    </button>
+                </form>
+
+                <form method="POST" action="{{ route('posts.react', $post->id) }}">
+                    @csrf
+                    <input type="hidden" name="type" value="dislike">
+
+                    <button class="btn"
+                        style="background: {{ $userReaction == 'dislike' ? '#ef4444' : '#334155' }}">
+                        👎 {{ $post->dislikes_count }}
+                    </button>
+                </form>
+                @endauth
+
             </div>
 
             <div id="videoShareCard" class="share-card hidden mt-4">
@@ -967,14 +1033,14 @@
                 <form method="POST" action="{{ route('reviews.react', $review->id) }}">
                     @csrf
                     <input type="hidden" name="type" value="like">
-                    <button class="review-btn">
+                    <button class="review-btn like">
                         👍 {{ $review->likes_count }}
                     </button>
                 </form>
                 <form method="POST" action="{{ route('reviews.react', $review->id) }}">
                     @csrf
                     <input type="hidden" name="type" value="dislike">
-                    <button class="review-btn">
+                    <button class="review-btn dislike">
                         👎 {{ $review->dislikes_count }}
                     </button>
                 </form>
@@ -986,7 +1052,7 @@
                         placeholder="Write a reply..."
                         class="flex-1 bg-zinc-800 p-2 rounded-lg text-sm text-white">
 
-                    <button class="review-btn">Reply</button>
+                    <button class="review-btn reply">Reply</button>
                 </form>
 
             </div>

@@ -84,12 +84,30 @@ class YouTubeController extends Controller
         $videoData = $videoResponse->json()['items'][0] ?? null;
 
         // find or create post
-        $post = Post::firstOrCreate(
+        $post = Post::withCount([
+            'reactions as likes_count' => function ($q) {
+                $q->where('type', 'like');
+            },
+            'reactions as dislikes_count' => function ($q) {
+                $q->where('type', 'dislike');
+            }
+        ])->firstOrCreate(
             ['youtube_video_id' => $id],
-            [
-                'user_id' => auth()->id() ?? 1,
-            ]
+            ['user_id' => auth()->id() ?? 1]
         );
+
+        $post->loadCount([
+            'reactions as likes_count' => fn($q) => $q->where('type', 'like'),
+            'reactions as dislikes_count' => fn($q) => $q->where('type', 'dislike'),
+        ]);
+
+        $userReaction = null;
+
+        if (auth()->check()) {
+            $userReaction = $post->reactions()
+                ->where('user_id', auth()->id())
+                ->value('type');
+        }
 
         // fetch reviews
         $reviews = Review::with(['user', 'replies.user'])
@@ -112,7 +130,8 @@ class YouTubeController extends Controller
             'post' => $post,
             'reviews' => $reviews,
             'nextPageToken' => $data['nextPageToken'] ?? null,
-            'prevPageToken' => $data['prevPageToken'] ?? null
+            'prevPageToken' => $data['prevPageToken'] ?? null,
+            'userReaction' => $userReaction,
         ]);
     }
 }

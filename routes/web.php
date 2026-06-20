@@ -7,6 +7,7 @@ use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordRequestController;
+use App\Http\Controllers\PostReactionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedditController;
@@ -53,6 +54,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
     Route::post('/reviews/{review}/react', [ReviewController::class, 'react'])->name('reviews.react');
     Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])->name('reviews.reply');
+
+    Route::post('/posts/{post}/react', [PostReactionController::class, 'react'])->name('posts.react');
 
     Route::get('/menu', [ProductController::class, 'index'])->name('products.index');
     Route::get('/menu/{product}', [ProductController::class, 'show'])->name('products.show');
