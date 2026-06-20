@@ -711,6 +711,114 @@
 
         }
 
+/* =========================
+   ACTION BUTTON BAR (CLEAN SYSTEM)
+========================= */
+
+.actions{
+    margin-top:20px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+}
+
+/* BASE BUTTON */
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+
+    padding:10px 14px;
+    border-radius:12px;
+
+    font-size:14px;
+    font-weight:600;
+
+    border:1px solid transparent;
+    cursor:pointer;
+
+    transition:0.2s ease;
+    color:white;
+    text-decoration:none;
+}
+
+/* COLORS */
+.btn-danger{
+    background:#ef4444;
+}
+.btn-danger:hover{
+    background:#dc2626;
+}
+
+.btn-orange{
+    background:#f97316;
+}
+.btn-orange:hover{
+    background:#ea580c;
+}
+
+.btn-teal{
+    background:linear-gradient(135deg,#14b8a6,#0f766e);
+}
+.btn-teal:hover{
+    opacity:0.9;
+}
+
+.btn-blue{
+    background:#3b82f6;
+}
+.btn-blue:hover{
+    background:#2563eb;
+}
+
+/* =========================
+   LIKE / DISLIKE GROUP
+========================= */
+
+.react-group{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+/* BASE REACT BUTTON */
+.react-btn{
+    padding:10px 14px;
+    border-radius:12px;
+
+    font-size:14px;
+    font-weight:600;
+
+    background:#1e293b;
+    border:1px solid #334155;
+    color:white;
+
+    cursor:pointer;
+    transition:0.2s ease;
+}
+
+.react-btn:hover{
+    transform:translateY(-1px);
+}
+
+/* ACTIVE STATES */
+.react-btn.active-like{
+    background:#22c55e;
+    border-color:#22c55e;
+}
+
+.react-btn.active-dislike{
+    background:#ef4444;
+    border-color:#ef4444;
+}
+
+.react-btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+}
+
     </style>
 </head>
 
@@ -815,50 +923,54 @@
 
             </div>
 
-            <div class="actions">
+<div class="actions">
 
-                <a href="/" class="btn back-btn">
-                    ← Back to Homepage
-                </a>
+    <a href="/" class="btn btn-danger">
+        ← Back to Homepage
+    </a>
 
-                <a href="https://youtube.com/watch?v={{ $id }}"
-                   target="_blank"
-                   class="btn youtube-btn">
-                    ▶ Open in YouTube
-                </a>
+    <a href="https://youtube.com/watch?v={{ $id }}" target="_blank" class="btn btn-orange">
+        ▶ Open in YouTube
+    </a>
 
-                <button type="button" id="shareButton" class="btn share-btn">
-                    🔗 Share Video
-                </button>
+    <button type="button" id="shareButton" class="btn btn-teal">
+        🔗 Share Video
+    </button>
 
-                <button onclick="openCommentsModal()"
-                        class="btn comment-btn">
-                    💬 YouTube Comments
-                </button>
+    <button onclick="openCommentsModal()" class="btn btn-blue">
+        💬 YouTube Comments
+    </button>
 
-                @auth
-                <form method="POST" action="{{ route('posts.react', $post->id) }}">
-                    @csrf
-                    <input type="hidden" name="type" value="like">
+    <!-- LIKE / DISLIKE GROUP -->
+    <div class="react-group">
 
-                    <button class="btn"
-                        style="background: {{ $userReaction == 'like' ? '#22c55e' : '#334155' }}">
-                        👍 {{ $post->likes_count }}
-                    </button>
-                </form>
+        <form method="POST" action="{{ route('posts.react', $post->id) }}">
+            @csrf
+            <input type="hidden" name="type" value="like">
 
-                <form method="POST" action="{{ route('posts.react', $post->id) }}">
-                    @csrf
-                    <input type="hidden" name="type" value="dislike">
+            <button
+                type="submit"
+                class="react-btn {{ $userReaction == 'like' ? 'active-like' : '' }}"
+                {{ auth()->check() ? '' : 'disabled' }}>
+                👍 {{ $post->likes_count }}
+            </button>
+        </form>
 
-                    <button class="btn"
-                        style="background: {{ $userReaction == 'dislike' ? '#ef4444' : '#334155' }}">
-                        👎 {{ $post->dislikes_count }}
-                    </button>
-                </form>
-                @endauth
+        <form method="POST" action="{{ route('posts.react', $post->id) }}">
+            @csrf
+            <input type="hidden" name="type" value="dislike">
 
-            </div>
+            <button
+                type="submit"
+                class="react-btn {{ $userReaction == 'dislike' ? 'active-dislike' : '' }}"
+                {{ auth()->check() ? '' : 'disabled' }}>
+                👎 {{ $post->dislikes_count }}
+            </button>
+        </form>
+
+    </div>
+
+</div>
 
             <div id="videoShareCard" class="share-card hidden mt-4">
                 <div class="share-header">
