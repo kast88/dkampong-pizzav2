@@ -24,7 +24,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div class="w-full h-96 bg-zinc-800 rounded-2xl overflow-hidden relative">
                 @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="absolute inset-0 w-full h-full object-cover">
+                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="absolute inset-0 w-full h-full object-cover">
                 @endif
                 <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10"></div>
             </div>
