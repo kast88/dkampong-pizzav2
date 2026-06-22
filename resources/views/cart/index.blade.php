@@ -39,7 +39,7 @@
                     <div class="flex items-center gap-4 p-4 rounded-2xl border border-zinc-800 bg-zinc-900">
                         <div class="w-16 h-16 rounded-xl bg-zinc-800 overflow-hidden flex-shrink-0">
                             @if($item->product->image)
-                                <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                                <img src="{{ asset($item->product->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-2xl">🍕</div>
                             @endif
