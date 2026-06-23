@@ -135,8 +135,9 @@
 
     <!-- Content Section -->
     <div class="py-20 px-4" style="background-color: #18181b;">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <!-- Left Content -->
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+            <!-- LEFT: Content -->
             <div class="space-y-8">
                 <div class="space-y-4">
                     <h1 class="text-5xl md:text-6xl font-bold leading-tight">
@@ -146,106 +147,131 @@
                         <br>
                         <span class="text-white">That Tastes Like Home</span>
                     </h1>
+
                     <p class="text-xl text-zinc-300 leading-relaxed">
-                        Experience the authentic flavors of traditional kampung-style pizza, crafted with the finest ingredients and generations of passion. Every bite is a journey to culinary excellence.
+                        Experience the authentic flavors of traditional kampung-style pizza, crafted with the finest ingredients and generations of passion.
                     </p>
                 </div>
 
                 <!-- Features -->
                 <div class="space-y-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
                             <span class="text-2xl">🔥</span>
                         </div>
                         <div>
                             <h3 class="font-semibold text-white">Fresh Ingredients Daily</h3>
-                            <p class="text-sm text-zinc-400">Sourced from local farmers and premium suppliers</p>
+                            <p class="text-sm text-zinc-400">Sourced from local farmers</p>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
                             <span class="text-2xl">👨‍🍳</span>
                         </div>
                         <div>
                             <h3 class="font-semibold text-white">Expert Pizza Masters</h3>
-                            <p class="text-sm text-zinc-400">Years of tradition perfected in every creation</p>
+                            <p class="text-sm text-zinc-400">Years of tradition perfected</p>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
                             <span class="text-2xl">⚡</span>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-white">Fast & Reliable Delivery</h3>
-                            <p class="text-sm text-zinc-400">Hot pizzas delivered to your doorstep in minutes</p>
+                            <h3 class="font-semibold text-white">Fast Delivery</h3>
+                            <p class="text-sm text-zinc-400">Hot pizzas to your doorstep</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- CTA Button -->
+                <!-- CTA -->
                 <div class="pt-6">
-                    <button class="relative inline-block group">
-                        <div class="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                        <div class="relative px-8 py-4 bg-zinc-950 rounded-2xl leading-none flex items-center gap-2 cursor-pointer hover:bg-zinc-900 transition">
+                    <a href="#menu" class="relative inline-block group">
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition"></div>
+                        <div class="relative px-8 py-4 bg-zinc-950 rounded-2xl flex items-center gap-2 hover:bg-zinc-900 transition">
                             <span class="text-lg font-bold">Order Now</span>
                             <span class="text-2xl">🍕</span>
                         </div>
-                    </button>
+                    </a>
                 </div>
             </div>
 
-            <!-- Right - Pizza Illustration -->
-            <div class="relative flex items-center justify-center">
-                <!-- Floating Pizza -->
-                <div class="relative w-96 h-96 flex items-center justify-center">
-                    <!-- Glow effect -->
-                    <div class="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-full blur-3xl"></div>
+            <!-- RIGHT: Pizza TOP + Community BOTTOM -->
+            <div class="flex flex-col gap-10">
 
-                    <!-- Pizza -->
-                    <svg class="relative w-full h-full drop-shadow-2xl animate-bounce" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Pizza base circle -->
-                        <circle cx="100" cy="100" r="95" fill="#D4A574" stroke="#C89968" stroke-width="2"/>
+                <!-- PIZZA (ORIGINAL FULL VERSION) -->
+                <div class="relative flex items-center justify-center">
+                    <div class="relative w-96 h-96 flex items-center justify-center">
 
-                        <!-- Sauce -->
-                        <circle cx="100" cy="100" r="88" fill="#C41E3A" opacity="0.9"/>
+                        <div class="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-full blur-3xl"></div>
 
-                        <!-- Cheese -->
-                        <circle cx="100" cy="100" r="85" fill="#F4A460" opacity="0.95"/>
+                        <!-- ORIGINAL PIZZA SVG (UNCHANGED) -->
+                        <svg class="relative w-full h-full drop-shadow-2xl animate-bounce"
+                            viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
 
-                        <!-- Pepperoni slices -->
-                        <circle cx="80" cy="70" r="8" fill="#B71C1C" opacity="0.9"/>
-                        <circle cx="75" cy="85" r="7" fill="#B71C1C" opacity="0.9"/>
-                        <circle cx="95" cy="75" r="8" fill="#B71C1C" opacity="0.9"/>
-                        <circle cx="110" cy="80" r="7" fill="#B71C1C" opacity="0.9"/>
-                        <circle cx="125" cy="75" r="8" fill="#B71C1C" opacity="0.9"/>
+                            <circle cx="100" cy="100" r="95" fill="#D4A574" stroke="#C89968" stroke-width="2"/>
+                            <circle cx="100" cy="100" r="88" fill="#C41E3A" opacity="0.9"/>
+                            <circle cx="100" cy="100" r="85" fill="#F4A460" opacity="0.95"/>
 
-                        <circle cx="70" cy="110" r="8" fill="#B71C1C" opacity="0.9"/>
-                        <circle cx="90" cy="115" r="7" fill="#B71C1C" opacity="0.9"/>
-                        <circle cx="130" cy="110" r="8" fill="#B71C1C" opacity="0.9"/>
-                        <circle cx="110" cy="125" r="7" fill="#B71C1C" opacity="0.9"/>
+                            <!-- pepperoni -->
+                            <circle cx="80" cy="70" r="8" fill="#B71C1C" opacity="0.9"/>
+                            <circle cx="75" cy="85" r="7" fill="#B71C1C" opacity="0.9"/>
+                            <circle cx="95" cy="75" r="8" fill="#B71C1C" opacity="0.9"/>
+                            <circle cx="110" cy="80" r="7" fill="#B71C1C" opacity="0.9"/>
+                            <circle cx="125" cy="75" r="8" fill="#B71C1C" opacity="0.9"/>
 
-                        <!-- Basil leaves -->
-                        <ellipse cx="85" cy="95" rx="6" ry="4" fill="#22C55E" opacity="0.8" transform="rotate(-20 85 95)"/>
-                        <ellipse cx="120" cy="105" rx="6" ry="4" fill="#22C55E" opacity="0.8" transform="rotate(25 120 105)"/>
-                        <ellipse cx="100" cy="120" rx="6" ry="4" fill="#22C55E" opacity="0.8" transform="rotate(-30 100 120)"/>
+                            <circle cx="70" cy="110" r="8" fill="#B71C1C" opacity="0.9"/>
+                            <circle cx="90" cy="115" r="7" fill="#B71C1C" opacity="0.9"/>
+                            <circle cx="130" cy="110" r="8" fill="#B71C1C" opacity="0.9"/>
+                            <circle cx="110" cy="125" r="7" fill="#B71C1C" opacity="0.9"/>
 
-                        <!-- Pizza slice line 1 (top) -->
-                        <line x1="100" y1="15" x2="100" y2="100" stroke="#8B7355" stroke-width="1.5" opacity="0.5"/>
+                            <!-- basil -->
+                            <ellipse cx="85" cy="95" rx="6" ry="4" fill="#22C55E" opacity="0.8" transform="rotate(-20 85 95)"/>
+                            <ellipse cx="120" cy="105" rx="6" ry="4" fill="#22C55E" opacity="0.8" transform="rotate(25 120 105)"/>
+                            <ellipse cx="100" cy="120" rx="6" ry="4" fill="#22C55E" opacity="0.8" transform="rotate(-30 100 120)"/>
 
-                        <!-- Pizza slice line 2 (bottom-left) -->
-                        <line x1="100" y1="100" x2="28" y2="153" stroke="#8B7355" stroke-width="1.5" opacity="0.5"/>
+                            <!-- slice lines -->
+                            <line x1="100" y1="15" x2="100" y2="100" stroke="#8B7355" stroke-width="1.5" opacity="0.5"/>
+                            <line x1="100" y1="100" x2="28" y2="153" stroke="#8B7355" stroke-width="1.5" opacity="0.5"/>
+                            <line x1="100" y1="100" x2="172" y2="153" stroke="#8B7355" stroke-width="1.5" opacity="0.5"/>
+                        </svg>
 
-                        <!-- Pizza slice line 3 (bottom-right) -->
-                        <line x1="100" y1="100" x2="172" y2="153" stroke="#8B7355" stroke-width="1.5" opacity="0.5"/>
-                    </svg>
+                        <!-- ORIGINAL FLOATING EFFECTS -->
+                        <div class="absolute top-12 right-10 text-4xl animate-spin" style="animation-duration: 4s;">✨</div>
+                        <div class="absolute bottom-20 left-8 text-3xl animate-pulse">⭐</div>
+                        <div class="absolute top-1/4 left-0 text-3xl animate-pulse" style="animation-delay: 0.5s;">⭐</div>
 
-                    <!-- Decorative stars -->
-                    <div class="absolute top-12 right-10 text-4xl animate-spin" style="animation-duration: 4s;">✨</div>
-                    <div class="absolute bottom-20 left-8 text-3xl animate-pulse">⭐</div>
-                    <div class="absolute top-1/4 left-0 text-3xl animate-pulse" style="animation-delay: 0.5s;">⭐</div>
+                    </div>
                 </div>
+
+                <!-- COMMUNITY (BOTTOM RIGHT) -->
+                <div class="p-6 rounded-2xl border border-orange-900/40 bg-gradient-to-br from-zinc-900/80 to-zinc-950 text-center relative overflow-hidden">
+
+                    <!-- soft glow -->
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
+                    <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
+
+                    <h2 class="text-2xl font-bold text-white mb-2">
+                        👥 D’Kampung Community Corner
+                    </h2>
+
+                    <p class="text-zinc-300 text-sm mb-2">
+                        Chill with your digital neighbors — share reviews, talk food, and enjoy casual pizza conversations 🍕
+                    </p>
+
+                    <p class="text-zinc-500 text-xs italic mb-5">
+                        “Sit down for a while, have a chat, and maybe grab another slice 😄”
+                    </p>
+
+                    <a href="{{ route('community') }}"
+                    class="inline-block px-5 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition shadow-lg shadow-orange-600/20">
+
+                        🌳 Enter Warung 🏡
+                    </a>
+                </div>
+
             </div>
         </div>
     </div>

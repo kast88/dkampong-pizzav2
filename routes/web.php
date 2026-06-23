@@ -59,6 +59,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/menu', [ProductController::class, 'index'])->name('products.index');
     Route::get('/menu/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('/community', function () {return view('community');})->name('community');
+
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
