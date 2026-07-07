@@ -54,7 +54,7 @@ class LoginController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return redirect()->route('landing');
+        return redirect()->route('community');
     }
 
     public function dashboard(BloggerService $blogger)

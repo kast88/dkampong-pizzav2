@@ -925,7 +925,7 @@
 
 <div class="actions">
 
-    <a href="/" class="btn btn-danger">
+    <a href="/landing" class="btn btn-danger">
         ← Back to Homepage
     </a>
 
