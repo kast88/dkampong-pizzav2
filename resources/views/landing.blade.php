@@ -268,7 +268,7 @@
                     <a href="{{ route('community') }}"
                     class="inline-block px-5 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition shadow-lg shadow-orange-600/20">
 
-                        🌳 Enter Warung 🏡
+                        🌳 Enter D'Kampung Corner 🛖
                     </a>
                 </div>
 

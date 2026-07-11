@@ -193,7 +193,7 @@
                                 Create new account
                             </a>
 
-                            <a href="{{ url('/landing') }}"
+                            <a href="{{ url('/') }}"
                                 class="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm font-semibold text-neutral-700 shadow-sm transition hover:border-orange-500 hover:bg-orange-50 hover:text-orange-600"
                             >
                                 Back to Homepage
