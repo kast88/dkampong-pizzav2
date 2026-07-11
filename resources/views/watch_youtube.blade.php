@@ -923,54 +923,54 @@
 
             </div>
 
-<div class="actions">
+            <div class="actions">
 
-    <a href="/landing" class="btn btn-danger">
-        ← Back to Homepage
-    </a>
+                <a href="/" class="btn btn-danger">
+                    ← Back to Homepage
+                </a>
 
-    <a href="https://youtube.com/watch?v={{ $id }}" target="_blank" class="btn btn-orange">
-        ▶ Open in YouTube
-    </a>
+                <a href="https://youtube.com/watch?v={{ $id }}" target="_blank" class="btn btn-orange">
+                    ▶ Open in YouTube
+                </a>
 
-    <button type="button" id="shareButton" class="btn btn-teal">
-        🔗 Share Video
-    </button>
+                <button type="button" id="shareButton" class="btn btn-teal">
+                    🔗 Share Video
+                </button>
 
-    <button onclick="openCommentsModal()" class="btn btn-blue">
-        💬 YouTube Comments
-    </button>
+                <button onclick="openCommentsModal()" class="btn btn-blue">
+                    💬 YouTube Comments
+                </button>
 
-    <!-- LIKE / DISLIKE GROUP -->
-    <div class="react-group">
+                <!-- LIKE / DISLIKE GROUP -->
+                <div class="react-group">
 
-        <form method="POST" action="{{ route('posts.react', $post->id) }}">
-            @csrf
-            <input type="hidden" name="type" value="like">
+                    <form method="POST" action="{{ route('posts.react', $post->id) }}">
+                        @csrf
+                        <input type="hidden" name="type" value="like">
 
-            <button
-                type="submit"
-                class="react-btn {{ $userReaction == 'like' ? 'active-like' : '' }}"
-                {{ auth()->check() ? '' : 'disabled' }}>
-                👍 {{ $post->likes_count }}
-            </button>
-        </form>
+                        <button
+                            type="submit"
+                            class="react-btn {{ $userReaction == 'like' ? 'active-like' : '' }}"
+                            {{ auth()->check() ? '' : 'disabled' }}>
+                            👍 {{ $post->likes_count }}
+                        </button>
+                    </form>
 
-        <form method="POST" action="{{ route('posts.react', $post->id) }}">
-            @csrf
-            <input type="hidden" name="type" value="dislike">
+                    <form method="POST" action="{{ route('posts.react', $post->id) }}">
+                        @csrf
+                        <input type="hidden" name="type" value="dislike">
 
-            <button
-                type="submit"
-                class="react-btn {{ $userReaction == 'dislike' ? 'active-dislike' : '' }}"
-                {{ auth()->check() ? '' : 'disabled' }}>
-                👎 {{ $post->dislikes_count }}
-            </button>
-        </form>
+                        <button
+                            type="submit"
+                            class="react-btn {{ $userReaction == 'dislike' ? 'active-dislike' : '' }}"
+                            {{ auth()->check() ? '' : 'disabled' }}>
+                            👎 {{ $post->dislikes_count }}
+                        </button>
+                    </form>
 
-    </div>
+                </div>
 
-</div>
+            </div>
 
             <div id="videoShareCard" class="share-card hidden mt-4">
                 <div class="share-header">

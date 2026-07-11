@@ -15,8 +15,8 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\YouTubeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/landing', [LandingPageController::class, 'index'])->name('landing');
-Route::get('/', [App\Http\Controllers\LoginController::class, 'showLoginForm'])->name('login');
+Route::get('/', [LandingPageController::class, 'index'])->name('landing');
+Route::get('/login', [App\Http\Controllers\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [LoginController::class, 'showRegister'])->name('register');

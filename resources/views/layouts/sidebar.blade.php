@@ -30,6 +30,13 @@
         <span>Homepage</span>
     </a>
 
+    <!-- Community -->
+    <a href="{{ route('community') }}"
+       class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
+        <span>🛖</span>
+        <span>D’Kampung Corner</span>
+    </a>
+
     <!-- Users -->
     <a href="{{ route('admin.users.index') }}"
        class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
