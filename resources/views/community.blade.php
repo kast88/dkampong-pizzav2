@@ -116,11 +116,11 @@
                         🔖
                         <span>Saved Posts</span>
                     </li>
-                    <li onclick="openModal('chatModal')"
+                    <!-- <li onclick="openModal('chatModal')"
                         class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
                         📩
                         <span>Messages</span>
-                    </li>
+                    </li> -->
                     <li class="hover:text-orange-400 cursor-pointer flex items-center justify-between transition">
                         <div class="flex items-center gap-3">
                             🔔
