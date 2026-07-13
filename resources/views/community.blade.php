@@ -116,10 +116,11 @@
                         🔖
                         <span>Saved Posts</span>
                     </li>
-                    <li class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
+                    <!-- <li onclick="openModal('chatModal')"
+                        class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
                         📩
                         <span>Messages</span>
-                    </li>
+                    </li> -->
                     <li class="hover:text-orange-400 cursor-pointer flex items-center justify-between transition">
                         <div class="flex items-center gap-3">
                             🔔
@@ -131,7 +132,8 @@
                         </span>
                         @endif
                     </li>
-                    <li class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
+                    <li onclick="openModal('membersModal')"
+                        class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
                         👥
                         <span>Members</span>
                     </li>
@@ -744,6 +746,63 @@
             </ul>
         </div>
     </div>
+    <!-- CHAT MODAL -->
+    <div id="chatModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end justify-end p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-80 flex flex-col overflow-hidden max-h-[80vh]">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between bg-zinc-800 px-4 py-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-full bg-orange-600 flex items-center justify-center text-lg" id="chatAvatar">👩‍🍳</div>
+                    <span class="text-sm font-semibold text-white" id="chatName">Mak Cik Siti</span>
+                </div>
+                <button onclick="closeModal('chatModal')" class="text-zinc-400 hover:text-white text-lg">✕</button>
+            </div>
+
+            <!-- Messages -->
+            <div id="chatMessages" class="flex-1 h-72 overflow-y-auto px-3 py-3 space-y-2 bg-zinc-950 text-sm">
+                <div class="flex justify-start">
+                    <div class="bg-zinc-800 text-white px-3 py-1.5 rounded-2xl max-w-[80%]">
+                        Hi! Sedap tu kampung food talk 🍕
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <div class="bg-orange-600 text-white px-3 py-1.5 rounded-2xl max-w-[80%]">
+                        Haha betul! Nak try pizza warung tu
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input -->
+            <div class="flex items-center gap-2 px-3 py-3 border-t border-zinc-800 bg-zinc-900">
+                <input id="chatInput" type="text" placeholder="Aa"
+                    onkeydown="if(event.key==='Enter') sendChatMessage()"
+                    class="flex-1 bg-zinc-950 border border-zinc-800 rounded-full px-3 py-1.5 text-sm text-white focus:outline-none focus:border-orange-500">
+                <button onclick="sendChatMessage()" class="text-orange-500 hover:text-orange-400 text-lg">➤</button>
+            </div>
+        </div>
+    </div>
+    <!-- MEMBERS MODAL -->
+    <div id="membersModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-end p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-80 flex flex-col overflow-hidden max-h-[80vh]">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between bg-zinc-800 px-4 py-3">
+                <span class="font-bold text-sm text-white">👥 Kampung Members</span>
+                <button onclick="closeModal('membersModal')" class="text-zinc-400 hover:text-white text-lg">✕</button>
+            </div>
+
+            <!-- Search -->
+            <div class="px-3 py-2 border-b border-zinc-800 bg-zinc-900">
+                <input type="text" id="memberSearch" placeholder="🔍 Search members..."
+                    oninput="filterMembers()"
+                    class="w-full bg-zinc-950 border border-zinc-800 rounded-full px-3 py-1.5 text-sm text-white focus:outline-none focus:border-orange-500">
+            </div>
+
+            <!-- Members List -->
+            <ul id="membersList" class="flex-1 h-96 overflow-y-auto divide-y divide-zinc-800"></ul>
+        </div>
+    </div>
     <footer class="border-t border-zinc-800 mt-10">
         <div class="max-w-7xl mx-auto py-6 text-center text-zinc-500 text-sm">
             © 2026 D'Kampung
@@ -818,6 +877,181 @@ window.onclick = function(event){
         event.target.classList.add('hidden');
     }
 }
+
+function getSmartReply(text){
+    const msg = text.toLowerCase().trim();
+
+    const replies = [
+        { keywords: ['assalamualaikum', 'salam'], response: 'Waalaikumussalam 🙏' },
+        { keywords: ['apa khabar', 'apa cerita'], response: 'Baik je, alhamdulillah! Awak macam mana?' },
+        { keywords: ['selamat pagi'], response: 'Selamat pagi juga! 🌞' },
+        { keywords: ['selamat petang'], response: 'Selamat petang! Dah makan ke belum?' },
+        { keywords: ['selamat malam'], response: 'Selamat malam, jangan tidur lambat sangat 😴' },
+        { keywords: ['makan', 'lapar'], response: 'Jom lah, kedai mana nak pergi? 🍛' },
+        { keywords: ['sedap', 'best'], response: 'Betul tu! Confirm try lah 😋' },
+        { keywords: ['terima kasih', 'thanks', 'tq'], response: 'Sama-sama! 😊' },
+        { keywords: ['ok', 'okay', 'baik'], response: 'Okay noted 👍' },
+        { keywords: ['bye', 'jumpa lagi'], response: 'Jumpa lagi! Take care 👋' },
+        { keywords: ['hai', 'hello', 'hi'], response: 'Hai juga! Ada apa hari ni?' },
+    ];
+
+    for(const entry of replies){
+        if(entry.keywords.some(keyword => msg.includes(keyword))){
+            return entry.response;
+        }
+    }
+
+    const fallback = [
+        'Haha betul tu 👍',
+        'Ooo faham faham',
+        'Hmm menarik jugak',
+        'Betul ke? Cerita lagi',
+        'Haha ok noted 👍'
+    ];
+    return fallback[Math.floor(Math.random() * fallback.length)];
+}
+
+function sendChatMessage(){
+    const input = document.getElementById('chatInput');
+    const box = document.getElementById('chatMessages');
+    if(!input.value.trim() || !currentChatMember) return;
+
+    const userText = input.value;
+    currentChatMember.messages.push({ from: 'me', text: userText });
+
+    const bubble = document.createElement('div');
+    bubble.className = 'flex justify-end';
+    bubble.innerHTML = `<div class="bg-orange-600 text-white px-3 py-1.5 rounded-2xl max-w-[80%]">${userText}</div>`;
+    box.appendChild(bubble);
+
+    input.value = '';
+    box.scrollTop = box.scrollHeight;
+
+    setTimeout(() => {
+        const replyText = getSmartReply(userText);
+        currentChatMember.messages.push({ from: 'them', text: replyText });
+
+        const reply = document.createElement('div');
+        reply.className = 'flex justify-start';
+        reply.innerHTML = `<div class="bg-zinc-800 text-white px-3 py-1.5 rounded-2xl max-w-[80%]">${replyText}</div>`;
+        box.appendChild(reply);
+        box.scrollTop = box.scrollHeight;
+    }, 600);
+}
+
+const members = [
+    {
+        id: 1,
+        name: 'Mak Cik Siti',
+        avatar: '👩‍🍳',
+        online: true,
+        status: 'Active now',
+        messages: [
+            { from: 'them', text: 'Hi! Sedap tu kampung food talk 🍕' },
+            { from: 'me', text: 'Haha betul! Nak try pizza warung tu' }
+        ]
+    },
+    {
+        id: 2,
+        name: 'Gamer Pakcik',
+        avatar: '🎮',
+        online: true,
+        status: 'Active now',
+        messages: [
+            { from: 'them', text: 'Bro nak main game apa hari ni?' }
+        ]
+    },
+    {
+        id: 3,
+        name: 'Ali Kampung',
+        avatar: '👨‍🌾',
+        online: false,
+        status: 'Offline · 2h ago',
+        messages: [
+            { from: 'them', text: 'Jom lepak kedai kopi petang ni' }
+        ]
+    },
+    {
+        id: 4,
+        name: 'Abang Tekno',
+        avatar: '💻',
+        online: true,
+        status: 'Active now',
+        messages: []
+    }
+];
+
+let currentChatMember = null;
+
+function openChatWith(id){
+    const member = members.find(m => m.id === id);
+    if(!member) return;
+
+    currentChatMember = member;
+
+    document.getElementById('chatAvatar').textContent = member.avatar;
+    document.getElementById('chatName').textContent = member.name;
+
+    const box = document.getElementById('chatMessages');
+    box.innerHTML = '';
+
+    member.messages.forEach(msg => {
+        const bubble = document.createElement('div');
+        bubble.className = msg.from === 'me' ? 'flex justify-end' : 'flex justify-start';
+        const bubbleColor = msg.from === 'me' ? 'bg-orange-600' : 'bg-zinc-800';
+        bubble.innerHTML = `<div class="${bubbleColor} text-white px-3 py-1.5 rounded-2xl max-w-[80%]">${msg.text}</div>`;
+        box.appendChild(bubble);
+    });
+
+    closeModal('membersModal');
+    openModal('chatModal');
+    box.scrollTop = box.scrollHeight;
+}
+
+function renderMembersList(list = members){
+    const ul = document.getElementById('membersList');
+    ul.innerHTML = '';
+
+    if(list.length === 0){
+        ul.innerHTML = '<li class="px-4 py-6 text-center text-zinc-500 text-sm">No members found 🕵️</li>';
+        return;
+    }
+
+    list.forEach(member => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center gap-3 px-4 py-3 hover:bg-zinc-800 cursor-pointer transition';
+        li.onclick = () => openChatWith(member.id);
+
+        const statusDot = member.online
+            ? '<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-zinc-900"></span>'
+            : '';
+
+        li.innerHTML = `
+            <div class="relative">
+                <div class="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center text-lg">${member.avatar}</div>
+                ${statusDot}
+            </div>
+            <div class="text-sm flex-1">
+                <p class="text-white font-medium">${member.name}</p>
+                <p class="text-xs text-zinc-500">${member.status}</p>
+            </div>
+            <button onclick="event.stopPropagation(); openChatWith(${member.id})" class="text-orange-500 hover:text-orange-400 text-sm">💬</button>
+        `;
+        ul.appendChild(li);
+    });
+}
+
+function filterMembers(){
+    const query = document.getElementById('memberSearch').value.trim().toLowerCase();
+
+    const filtered = members.filter(member =>
+        member.name.toLowerCase().includes(query)
+    );
+
+    renderMembersList(filtered);
+}
+
+renderMembersList();
 
 </script>
 
