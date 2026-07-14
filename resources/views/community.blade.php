@@ -3,24 +3,23 @@
 @section('content')
 
 <style>
-/* Modal scrollbar */
-.modal-scroll::-webkit-scrollbar {
-    width: 6px;
-}
+    /* Modal scrollbar */
+    .modal-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
 
-.modal-scroll::-webkit-scrollbar-thumb {
-    background: #52525b;
-    border-radius: 10px;
-}
-
+    .modal-scroll::-webkit-scrollbar-thumb {
+        background: #52525b;
+        border-radius: 10px;
+    }
 </style>
 
 @php
-    $user = auth()->user();
+$user = auth()->user();
 @endphp
 
 @php
-    $notificationCount = 3;
+$notificationCount = 3;
 @endphp
 
 <div class="min-h-screen bg-zinc-950 text-white">
@@ -77,59 +76,38 @@
         <aside class="hidden lg:block col-span-3">
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-5">
                 <div class="text-center">
-                    <div class="w-20 h-20 mx-auto rounded-full overflow-hidden bg-orange-600 flex items-center justify-center text-4xl border-2 border-orange-500">
+                    <div
+                        class="w-20 h-20 mx-auto rounded-full overflow-hidden bg-orange-600 flex items-center justify-center text-4xl border-2 border-orange-500">
                         @if(auth()->user()->profile_photo)
-                        <img
-                        src="{{ asset('storage/'.auth()->user()->profile_photo) }}"
-                        class="w-full h-full object-cover">
+                        <img src="{{ asset('storage/'.auth()->user()->profile_photo) }}"
+                            class="w-full h-full object-cover">
                         @else
                         👨‍🌾
                         @endif
                     </div>
                     <h3 class="font-bold mt-3">
-                    {{auth()->user()->name ?? 'Guest'}}
+                        {{auth()->user()->name ?? 'Guest'}}
                     </h3>
                     <p class="text-xs text-zinc-500">
-                    {{auth()->user()->role ?? 'Guest'}}
+                        {{auth()->user()->role ?? 'Guest'}}
                     </p>
-                    {{-- @if(auth()->user()->show_profile)
-                        @if(auth()->user()->bio)
-                        <p class="text-sm text-zinc-400 mt-3">
-                            "{{ auth()->user()->bio }}"
-                        </p>
-                        @endif
-                        @if(auth()->user()->interests)
-                            <div class="flex flex-wrap gap-2 justify-center mt-3">
-                                @foreach(auth()->user()->interests as $interest)
-                                <span class="px-2 py-1 bg-zinc-800 rounded-full text-xs text-orange-400">
-                                {{ $interest }}
-                                </span>
-                                @endforeach
-                            </div>
-                        @endif
-                    @endif --}}
-                    {{-- @if(auth()->user()->show_location && auth()->user()->location)
-                        <p class="text-xs text-zinc-500 mt-2">
-                        📍 {{ auth()->user()->location }}
-                        </p>
-                    @endif --}}
                 </div>
                 <div class="mt-4 border-t border-zinc-800 pt-4 text-sm text-zinc-400">
                     @if(auth()->user()->show_profile)
-                        @if(auth()->user()->interests)
-                            <div class="flex flex-wrap gap-2 justify-center mt-2">
-                                @foreach(auth()->user()->interests as $interest)
-                                <span class="px-2 py-1 bg-zinc-800 rounded-full text-xs text-orange-400">
-                                {{ $interest }}
-                                </span>
-                                @endforeach
-                            </div>
-                        @endif
-                        @if(auth()->user()->bio)
-                        <p class="text-sm text-zinc-400 mt-3">
-                            "{{ auth()->user()->bio }}"
-                        </p>
-                        @endif
+                    @if(auth()->user()->interests)
+                    <div class="flex flex-wrap gap-2 justify-center mt-2">
+                        @foreach(auth()->user()->interests as $interest)
+                        <span class="px-2 py-1 bg-zinc-800 rounded-full text-xs text-orange-400">
+                            {{ $interest }}
+                        </span>
+                        @endforeach
+                    </div>
+                    @endif
+                    @if(auth()->user()->bio)
+                    <p class="text-sm text-zinc-400 mt-3">
+                        "{{ auth()->user()->bio }}"
+                    </p>
+                    @endif
                     @endif
                     <div class="mt-2">
                         📝 Posts: 24
@@ -142,7 +120,7 @@
                     </div>
                 </div>
                 <a href="{{route('profile.edit')}}"
-                class="block mt-4 text-center bg-orange-600 rounded-lg py-2 text-sm">
+                    class="block mt-4 text-center bg-orange-600 rounded-lg py-2 text-sm">
                     Edit Profile
                 </a>
             </div>
@@ -156,7 +134,7 @@
                         <span>Home Feed</span>
                     </li>
                     <a href="{{ route('landing') }}"
-                    class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
+                        class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
                         🏡
                         <span>Jalan2 D'Kampung</span>
                     </a>
@@ -198,12 +176,12 @@
                         <span>Settings</span>
                     </li>
                     <li onclick="openModal('aboutModal')"
-                    class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
+                        class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
                         🌳
                         <span>About D'Kampung</span>
                     </li>
                     <li onclick="openModal('rulesModal')"
-                    class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
+                        class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
                         📌
                         <span>Rules</span>
                     </li>
@@ -211,8 +189,7 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
-                            <button
-                                type="submit"
+                            <button type="submit"
                                 class="w-full flex items-center gap-3 text-red-500 hover:text-red-400 transition cursor-pointer">
 
                                 <span>🚪</span>
@@ -231,7 +208,11 @@
 
             <!-- CREATE POST BOX -->
 
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+            <form action="{{ route('threads.store') }}" method="POST" enctype="multipart/form-data"
+                class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+
+                @csrf
+
                 <div class="mb-10 text-center">
                     <h1 class="text-3xl font-bold">
                         🏡 D'Kampung Community Corner
@@ -240,8 +221,7 @@
                 <div class="flex gap-3 items-center mb-4">
                     <div class="w-11 h-11 rounded-full bg-orange-600 flex items-center justify-center overflow-hidden">
                         @if($user && $user->profile_photo)
-                        <img src="{{ asset('storage/'.$user->profile_photo) }}"
-                        class="w-full h-full object-cover">
+                        <img src="{{ asset('storage/'.$user->profile_photo) }}" class="w-full h-full object-cover">
                         @else
                         👨‍🌾
                         @endif
@@ -250,14 +230,14 @@
                         {{ $user ? $user->name : 'Guest' }},
                         what's happening in the kampung today?
                         @if(auth()->user()->show_location && auth()->user()->location)
-                            <p class="text-xs text-zinc-500 mt-2">
+                        <p class="text-xs text-zinc-500 mt-2">
                             📍 {{ auth()->user()->location }}
-                            </p>
+                        </p>
                         @endif
                     </span>
                 </div>
-                <select class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm mb-3">
-                    <option>
+                <select name="category" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm mb-3">
+                    <option value="">
                         Select Category
                     </option>
                     @foreach($categories as $cat)
@@ -266,23 +246,22 @@
                     </option>
                     @endforeach
                 </select>
-                <input class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 mb-3 text-sm"
-                    placeholder="Post title...">
-                <textarea rows="3" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm"
+                <input name="title" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 mb-3 text-sm"
+                    placeholder="Thread title...">
+                <textarea name="content" rows="3"
+                    class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm"
                     placeholder="Share your thoughts with the kampung..."></textarea>
-                    <div id="selectedPhoto"
-                    class="hidden mt-4">
-                        <img id="postImagePreview"
-                        class="rounded-xl max-h-60 w-full object-cover">
-                    </div>
+                <div id="selectedPhoto" class="hidden mt-4">
+                    <img id="postImagePreview" class="rounded-xl max-h-60 w-full object-cover">
+                </div>
                 <div class="flex justify-between items-center mt-4">
                     <div class="flex gap-4 text-sm text-zinc-500">
-                        <label for="photoUpload"
-                        class="hover:text-orange-400 cursor-pointer">
+                        <label for="photoUpload" class="hover:text-orange-400 cursor-pointer">
                             🖼️ Photo
                         </label>
                         <input
                         type="file"
+                        name="image"
                         id="photoUpload"
                         accept="image/*"
                         class="hidden"
@@ -296,27 +275,26 @@
                         <button class="hover:text-orange-400">
                             📊 Poll
                         </button>
-                        <button
-                        onclick="openModal('liveModal')"
-                        class="hover:text-orange-400">
+                        <button onclick="openModal('liveModal')" class="hover:text-orange-400">
 
-                        🎥 Live
+                            🎥 Live
 
                         </button>
                     </div>
-                    <button class="bg-orange-600 hover:bg-orange-700 px-5 py-2 rounded-xl text-sm font-semibold">
+                    <button type="submit"
+                        class="bg-orange-600 hover:bg-orange-700 px-5 py-2 rounded-xl text-sm font-semibold">
+
                         Post
+
                     </button>
                 </div>
-            </div>
+            </form>
 
             <!-- SEARCH + CATEGORIES -->
 
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
                 <div class="relative">
-                    <input type="text"
-                        placeholder="🔍 Search posts, users, topics..."
-                        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl
+                    <input type="text" placeholder="🔍 Search posts, users, topics..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl
                         px-4 py-3 text-sm
                         focus:outline-none focus:border-orange-500
                         transition">
@@ -335,10 +313,8 @@
 
                         <!-- ALL -->
 
-                        <button
-                        class="category-btn whitespace-nowrap px-4 py-2 rounded-full
-                        bg-orange-600 text-white text-sm font-medium"
-                        data-category="ALL">
+                        <button class="category-btn whitespace-nowrap px-4 py-2 rounded-full
+                        bg-orange-600 text-white text-sm font-medium" data-category="ALL">
 
                             🌎 All
 
@@ -346,12 +322,10 @@
 
                         @foreach($categories as $cat)
 
-                        <button
-                        class="category-btn whitespace-nowrap px-4 py-2 rounded-full
+                        <button class="category-btn whitespace-nowrap px-4 py-2 rounded-full
                         bg-zinc-950 border border-zinc-800
                         text-zinc-400 text-sm
-                        hover:text-orange-400 hover:border-orange-500 transition"
-                        data-category="{{ $cat['name'] }}">
+                        hover:text-orange-400 hover:border-orange-500 transition" data-category="{{ $cat['name'] }}">
 
                             {{ $cat['icon'] }}
                             {{ $cat['name'] }}
@@ -374,6 +348,81 @@
                     Trending
                 </button>
             </div>
+
+            <!-- THREAD FRPM DB -->
+
+            @foreach($threads as $thread)
+
+            <article class="post-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
+                data-category="{{ $thread->category }}">
+
+                <div class="p-5 flex gap-3">
+
+                    <div class="w-11 h-11 rounded-full bg-orange-600 flex items-center justify-center overflow-hidden">
+
+                        @if($thread->user->profile_photo)
+
+                        <img src="{{ asset('storage/'.$thread->user->profile_photo) }}"
+                            class="w-full h-full object-cover">
+
+                        @else
+
+                        👨‍🌾
+
+                        @endif
+
+                    </div>
+
+
+                    <div>
+                        <h3 class="font-semibold">
+                            {{ $thread->user->name }}
+                        </h3>
+
+                        <p class="text-xs text-zinc-500">
+                            {{ $thread->category }}
+                            • {{ $thread->created_at->diffForHumans() }}
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="px-5 pb-5">
+
+                    <h2 class="text-xl font-bold">
+                        {{ $thread->title }}
+                    </h2>
+
+
+                    <p class="text-zinc-300 mt-3">
+                        {{ $thread->content }}
+                    </p>
+
+
+                    @if($thread->image)
+
+                    <img src="{{ asset('storage/'.$thread->image) }}" class="mt-4 rounded-xl w-full">
+
+                    @endif
+
+                </div>
+
+
+                <div class="border-t border-zinc-800 px-5 py-3 text-sm text-zinc-400">
+
+                    👍 0 Likes
+                    &nbsp;&nbsp;
+                    💬 0 Comments
+                    &nbsp;&nbsp;
+                    🔖 Save
+
+                </div>
+
+
+            </article>
+
+            @endforeach
+
 
             <!-- SAMPLE THREAD 1 -->
 
@@ -404,9 +453,7 @@
 
                     <!-- Right -->
                     <div class="flex items-center gap-2">
-                        <button
-                            id="followBtn1"
-                            onclick="toggleFollow('followBtn1','followIcon1','followText1')"
+                        <button id="followBtn1" onclick="toggleFollow('followBtn1','followIcon1','followText1')"
                             class="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition">
 
                             <span id="followIcon1">+</span>
@@ -515,9 +562,7 @@
                     <!-- Right -->
                     <div class="flex items-center gap-2">
 
-                        <button
-                            id="followBtn2"
-                            onclick="toggleFollow('followBtn2','followIcon2','followText2')"
+                        <button id="followBtn2" onclick="toggleFollow('followBtn2','followIcon2','followText2')"
                             class="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition">
 
                             <span id="followIcon2">+</span>
@@ -568,18 +613,18 @@
                     🍛 Favourite Kampung Food?
                 </h2>
                 <div class="mt-4 space-y-2">
-                <label>
-                <input type="radio">
-                    Nasi Lemak
-                </label>
-                <label>
-                <input type="radio">
-                    Mee Kari
-                </label>
-                <label>
-                <input type="radio">
-                    Pizza
-                </label>
+                    <label>
+                        <input type="radio">
+                        Nasi Lemak
+                    </label>
+                    <label>
+                        <input type="radio">
+                        Mee Kari
+                    </label>
+                    <label>
+                        <input type="radio">
+                        Pizza
+                    </label>
                 </div>
                 <button class="mt-4 bg-orange-600 px-4 py-2 rounded-xl">
                     Vote
@@ -618,9 +663,7 @@
 
                     <div class="flex items-center gap-2">
 
-                        <button
-                            id="followBtn3"
-                            onclick="toggleFollow('followBtn3','followIcon3','followText3')"
+                        <button id="followBtn3" onclick="toggleFollow('followBtn3','followIcon3','followText3')"
                             class="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition">
 
                             <span id="followIcon3">+</span>
@@ -783,24 +826,24 @@
                     📅 Upcoming Events
                 </h2>
                 <div class="mt-4 space-y-3 text-sm">
-                <div>
-                    🍔 Food Festival
-                    <p class="text-zinc-500">
-                        22 July
-                    </p>
-                </div>
-                <div>
-                    🎮 Gaming Night
-                    <p class="text-zinc-500">
-                        28 July
-                    </p>
-                </div>
-                <div>
-                    🥘 Ramadan Bazaar
-                    <p class="text-zinc-500">
-                        Coming Soon
-                    </p>
-                </div>
+                    <div>
+                        🍔 Food Festival
+                        <p class="text-zinc-500">
+                            22 July
+                        </p>
+                    </div>
+                    <div>
+                        🎮 Gaming Night
+                        <p class="text-zinc-500">
+                            28 July
+                        </p>
+                    </div>
+                    <div>
+                        🥘 Ramadan Bazaar
+                        <p class="text-zinc-500">
+                            Coming Soon
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -817,9 +860,8 @@
                     Get 20% OFF today.
                     Support local businesses.
                 </p>
-                <a href="{{ route('products.index') }}"
-                class="inline-block mt-4 bg-orange-600 px-5 py-2 rounded-xl">
-                Order Now →
+                <a href="{{ route('products.index') }}" class="inline-block mt-4 bg-orange-600 px-5 py-2 rounded-xl">
+                    Order Now →
                 </a>
             </article>
         </aside>
@@ -827,8 +869,7 @@
 
     <!-- PHOTO EDITOR MODAL -->
 
-    <div id="photoEditor"
-    class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
+    <div id="photoEditor" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
 
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-lg">
 
@@ -848,34 +889,27 @@
 
             <div class="bg-black rounded-xl h-72 flex items-center justify-center overflow-hidden">
 
-                <img
-                id="previewImage"
-                class="max-h-full max-w-full rounded-lg transition">
+                <img id="previewImage" class="max-h-full max-w-full rounded-lg transition">
 
             </div>
 
             <!-- Tools -->
 
             <div class="grid grid-cols-2 gap-3 mt-5">
-                <button onclick="rotateImage()"
-                class="bg-zinc-800 py-2 rounded-lg">
+                <button onclick="rotateImage()" class="bg-zinc-800 py-2 rounded-lg">
                     🔄 Rotate
                 </button>
-                <button onclick="resetFilter()"
-                class="bg-zinc-800 py-2 rounded-lg">
+                <button onclick="resetFilter()" class="bg-zinc-800 py-2 rounded-lg">
                     ♻️ Reset
                 </button>
-                <button onclick="increaseBrightness()"
-                class="bg-zinc-800 py-2 rounded-lg">
+                <button onclick="increaseBrightness()" class="bg-zinc-800 py-2 rounded-lg">
                     ☀️ Brightness
                 </button>
-                <button onclick="makeGray()"
-                class="bg-zinc-800 py-2 rounded-lg">
+                <button onclick="makeGray()" class="bg-zinc-800 py-2 rounded-lg">
                     ⚫ Black & White
                 </button>
             </div>
-            <button onclick="applyPhoto()"
-            class="mt-5 w-full bg-orange-600 py-3 rounded-xl font-semibold">
+            <button onclick="applyPhoto()" class="mt-5 w-full bg-orange-600 py-3 rounded-xl font-semibold">
                 Done ✓
             </button>
         </div>
@@ -884,10 +918,10 @@
     <!-- ABOUT MODAL -->
 
     <div id="aboutModal"
-    class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5 overflow-y-auto">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full relative max-h-[85vh] overflow-y-auto modal-scroll">
-            <button onclick="closeModal('aboutModal')"
-            class="absolute top-4 right-4 text-zinc-400 hover:text-white">
+        class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5 overflow-y-auto">
+        <div
+            class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full relative max-h-[85vh] overflow-y-auto modal-scroll">
+            <button onclick="closeModal('aboutModal')" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
                 ✕
             </button>
             <h2 class="font-bold text-xl mb-4">
@@ -977,11 +1011,9 @@
 
     <!-- RULES MODAL -->
 
-    <div id="rulesModal"
-    class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
+    <div id="rulesModal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full relative">
-            <button onclick="closeModal('rulesModal')"
-            class="absolute top-4 right-4 text-zinc-400 hover:text-white">
+            <button onclick="closeModal('rulesModal')" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
                 ✕
             </button>
             <h2 class="font-bold text-xl mb-4">
@@ -1016,7 +1048,8 @@
             <!-- Header -->
             <div class="flex items-center justify-between bg-zinc-800 px-4 py-3">
                 <div class="flex items-center gap-2">
-                    <div class="w-9 h-9 rounded-full bg-orange-600 flex items-center justify-center text-lg" id="chatAvatar">👩‍🍳</div>
+                    <div class="w-9 h-9 rounded-full bg-orange-600 flex items-center justify-center text-lg"
+                        id="chatAvatar">👩‍🍳</div>
                     <span class="text-sm font-semibold text-white" id="chatName">Mak Cik Siti</span>
                 </div>
                 <button onclick="closeModal('chatModal')" class="text-zinc-400 hover:text-white text-lg">✕</button>
@@ -1038,8 +1071,7 @@
 
             <!-- Input -->
             <div class="flex items-center gap-2 px-3 py-3 border-t border-zinc-800 bg-zinc-900">
-                <input id="chatInput" type="text" placeholder="Aa"
-                    onkeydown="if(event.key==='Enter') sendChatMessage()"
+                <input id="chatInput" type="text" placeholder="Aa" onkeydown="if(event.key==='Enter') sendChatMessage()"
                     class="flex-1 bg-zinc-950 border border-zinc-800 rounded-full px-3 py-1.5 text-sm text-white focus:outline-none focus:border-orange-500">
                 <button onclick="sendChatMessage()" class="text-orange-500 hover:text-orange-400 text-lg">➤</button>
             </div>
@@ -1057,8 +1089,7 @@
 
             <!-- Search -->
             <div class="px-3 py-2 border-b border-zinc-800 bg-zinc-900">
-                <input type="text" id="memberSearch" placeholder="🔍 Search members..."
-                    oninput="filterMembers()"
+                <input type="text" id="memberSearch" placeholder="🔍 Search members..." oninput="filterMembers()"
                     class="w-full bg-zinc-950 border border-zinc-800 rounded-full px-3 py-1.5 text-sm text-white focus:outline-none focus:border-orange-500">
             </div>
 
@@ -1069,46 +1100,38 @@
 
     <!-- LIVE SETUP MODAL -->
 
-    <div id="liveModal"
-    class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
+    <div id="liveModal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-lg">
-        <button onclick="closeModal('liveModal')"
-        class="float-right text-zinc-400">
-            ✕
-        </button>
-        <h2 class="font-bold text-xl mb-5">
-            🔴 Start Live Streaming
-        </h2>
-        <input
-        id="liveTitle"
-        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 mb-3"
-        placeholder="Live title...">
-        <select
-        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3">
-            <option>
-                Food Talk
-            </option>
-            <option>
-                Gaming
-            </option>
-            <option>
-                General Chat
-            </option>
-        </select>
-            <button
-            onclick="startLive()"
-            class="mt-5 w-full bg-red-600 py-3 rounded-xl">
-            🔴 Go Live
+            <button onclick="closeModal('liveModal')" class="float-right text-zinc-400">
+                ✕
+            </button>
+            <h2 class="font-bold text-xl mb-5">
+                🔴 Start Live Streaming
+            </h2>
+            <input id="liveTitle" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 mb-3"
+                placeholder="Live title...">
+            <select class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3">
+                <option>
+                    Food Talk
+                </option>
+                <option>
+                    Gaming
+                </option>
+                <option>
+                    General Chat
+                </option>
+            </select>
+            <button onclick="startLive()" class="mt-5 w-full bg-red-600 py-3 rounded-xl">
+                🔴 Go Live
             </button>
         </div>
     </div>
 
-    <div id="liveRoom"
-    class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
+    <div id="liveRoom" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
         <div class="w-full max-w-3xl bg-zinc-900 rounded-2xl overflow-hidden">
             <div class="p-4 flex justify-between">
                 <h2 class="font-bold">
-                🔴 LIVE NOW
+                    🔴 LIVE NOW
                 </h2>
                 <button onclick="closeModal('liveRoom')">
                     ✕
@@ -1118,9 +1141,8 @@
                 🎥
             </div>
             <div class="p-4">
-                <h3 id="streamTitle"
-                class="font-bold text-xl">
-                    </h3>
+                <h3 id="streamTitle" class="font-bold text-xl">
+                </h3>
                 <p class="text-zinc-400">
                     👀 234 viewers
                 </p>
@@ -1428,14 +1450,17 @@ function toggleFollow(btnId, iconId, textId){
 }
 
 let currentImage = null;
+let originalFile = null;
 let rotation = 0;
 let brightness = 100;
 let grayscale = 0;
 
-
 function openPhotoEditor(event){
     const file = event.target.files[0];
-    if(!file) return;
+    if(!file){
+        return;
+    }
+    originalFile = file;
     const reader = new FileReader();
     reader.onload = function(e){
         currentImage = e.target.result;
@@ -1477,15 +1502,54 @@ function resetFilter(){
 }
 
 function applyPhoto(){
-    const editor =
-    document.getElementById('previewImage');
-    const post =
-    document.getElementById('postImagePreview');
-    post.src = editor.src;
-    document
-    .getElementById('selectedPhoto')
-    .classList.remove('hidden');
-    closePhotoEditor();
+    const img = document.getElementById('previewImage');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+
+    image.onload = function(){
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.filter =
+        `brightness(${brightness}%) grayscale(${grayscale}%)`;
+        ctx.translate(
+            canvas.width/2,
+            canvas.height/2
+        );
+        ctx.rotate(
+            rotation * Math.PI / 180
+        );
+        ctx.drawImage(
+            image,
+            -image.width/2,
+            -image.height/2
+        );
+        canvas.toBlob(function(blob){
+            const editedFile = new File(
+                [blob],
+                originalFile.name,
+                {
+                    type:"image/jpeg"
+                }
+            );
+            const input =
+            document.getElementById('photoUpload');
+            const dataTransfer =
+            new DataTransfer();
+            dataTransfer.items.add(
+                editedFile
+            );
+            input.files =
+            dataTransfer.files;
+            document.getElementById('postImagePreview').src =
+            URL.createObjectURL(blob);
+            document
+            .getElementById('selectedPhoto')
+            .classList.remove('hidden');
+            closePhotoEditor();
+        },"image/jpeg",0.9);
+    }
+    image.src = img.src;
 }
 
 function closePhotoEditor(){
@@ -1512,6 +1576,24 @@ document.getElementById('streamTitle')
 closeModal('liveModal');
 
 openModal('liveRoom');
+
+}
+
+function previewUpload(event){
+
+    const file = event.target.files[0];
+
+    if(!file){
+        return;
+    }
+
+    const preview = document.getElementById('postImagePreview');
+
+    preview.src = URL.createObjectURL(file);
+
+    document
+    .getElementById('selectedPhoto')
+    .classList.remove('hidden');
 
 }
 

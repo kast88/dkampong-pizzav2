@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Thread;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -13,6 +14,10 @@ class CommunityController extends Controller
             ->latest()
             ->get();
 
-        return view('community', compact('users'));
+        $threads = Thread::with('user')
+            ->latest()
+            ->get();
+
+        return view('community', compact('users', 'threads'));
     }
 }

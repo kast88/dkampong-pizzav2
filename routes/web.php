@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedditController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\YouTubeController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,8 +61,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/menu', [ProductController::class, 'index'])->name('products.index');
     Route::get('/menu/{product}', [ProductController::class, 'show'])->name('products.show');
-    Route::get('/community', [CommunityController::class,'index'])->name('community');
 
+    Route::get('/community', [CommunityController::class,'index'])->name('community');
+    Route::post('/threads', [ThreadController::class,'store'])->middleware('auth')->name('threads.store');
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
