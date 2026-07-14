@@ -77,8 +77,14 @@
         <aside class="hidden lg:block col-span-3">
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-5">
                 <div class="text-center">
-                    <div class="w-20 h-20 mx-auto rounded-full bg-orange-600 flex items-center justify-center text-4xl">
-                    👨‍🌾
+                    <div class="w-20 h-20 mx-auto rounded-full overflow-hidden bg-orange-600 flex items-center justify-center text-4xl border-2 border-orange-500">
+                        @if(auth()->user()->profile_photo)
+                        <img
+                        src="{{ asset('storage/'.auth()->user()->profile_photo) }}"
+                        class="w-full h-full object-cover">
+                        @else
+                        👨‍🌾
+                        @endif
                     </div>
                     <h3 class="font-bold mt-3">
                     {{auth()->user()->name ?? 'Guest'}}
@@ -86,21 +92,53 @@
                     <p class="text-xs text-zinc-500">
                     {{auth()->user()->role ?? 'Guest'}}
                     </p>
-                    @if(auth()->user()->bio)
-                    <p class="text-sm text-zinc-400 mt-3">
-                        "{{ auth()->user()->bio }}"
-                    </p>
-                    @endif
+                    {{-- @if(auth()->user()->show_profile)
+                        @if(auth()->user()->bio)
+                        <p class="text-sm text-zinc-400 mt-3">
+                            "{{ auth()->user()->bio }}"
+                        </p>
+                        @endif
+                        @if(auth()->user()->interests)
+                            <div class="flex flex-wrap gap-2 justify-center mt-3">
+                                @foreach(auth()->user()->interests as $interest)
+                                <span class="px-2 py-1 bg-zinc-800 rounded-full text-xs text-orange-400">
+                                {{ $interest }}
+                                </span>
+                                @endforeach
+                            </div>
+                        @endif
+                    @endif --}}
+                    {{-- @if(auth()->user()->show_location && auth()->user()->location)
+                        <p class="text-xs text-zinc-500 mt-2">
+                        📍 {{ auth()->user()->location }}
+                        </p>
+                    @endif --}}
                 </div>
                 <div class="mt-4 border-t border-zinc-800 pt-4 text-sm text-zinc-400">
-                    <div>
+                    @if(auth()->user()->show_profile)
+                        @if(auth()->user()->interests)
+                            <div class="flex flex-wrap gap-2 justify-center mt-2">
+                                @foreach(auth()->user()->interests as $interest)
+                                <span class="px-2 py-1 bg-zinc-800 rounded-full text-xs text-orange-400">
+                                {{ $interest }}
+                                </span>
+                                @endforeach
+                            </div>
+                        @endif
+                        @if(auth()->user()->bio)
+                        <p class="text-sm text-zinc-400 mt-3">
+                            "{{ auth()->user()->bio }}"
+                        </p>
+                        @endif
+                    @endif
+                    <div class="mt-2">
                         📝 Posts: 24
                     </div>
                     <div>
                         ❤️ Reactions: 340
                     </div>
                     <div>
-                        💎 Reputation: Platinum Member
+                        💎 Platinum Member
                     </div>
                 </div>
                 <a href="{{route('profile.edit')}}"
@@ -211,6 +249,11 @@
                     <span class="text-zinc-400">
                         {{ $user ? $user->name : 'Guest' }},
                         what's happening in the kampung today?
+                        @if(auth()->user()->show_location && auth()->user()->location)
+                            <p class="text-xs text-zinc-500 mt-2">
+                            📍 {{ auth()->user()->location }}
+                            </p>
+                        @endif
                     </span>
                 </div>
                 <select class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm mb-3">

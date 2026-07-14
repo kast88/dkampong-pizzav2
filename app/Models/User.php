@@ -23,6 +23,13 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'location',
+        'interests',
+        'bio',
+        'profile_photo',
+        'show_profile',
+        'allow_messages',
+        'show_location',
     ];
 
     protected $casts = [
@@ -30,6 +37,10 @@ class User extends Authenticatable
         'password' => 'hashed',
         'is_admin' => 'boolean',
         'is_active' => 'boolean',
+        'interests' => 'array',
+        'show_profile' => 'boolean',
+        'allow_messages' => 'boolean',
+        'show_location' => 'boolean',
     ];
 
     protected $hidden = [
