@@ -24,10 +24,10 @@
 
                 <!-- Cover Photo -->
                 <div class="relative">
-                    <div class="h-44 rounded-2xl bg-gradient-to-r from-orange-700 via-orange-500 to-yellow-500 relative flex flex-col items-center">
+                    <div class="h-44 rounded-2xl relative flex flex-col items-center">
 
                         <!-- Profile Picture -->
-                        <div class="mt-7 w-28 h-28 rounded-full overflow-hidden bg-zinc-800 border-4 border-orange-500 shadow-lg">
+                        <div class="w-28 h-28 rounded-full overflow-hidden bg-zinc-800 border-4 border-orange-500 shadow-lg">
                             @if(auth()->user()->profile_photo)
                                 <img
                                     src="{{ asset('storage/'.auth()->user()->profile_photo) }}"
@@ -46,6 +46,7 @@
                             <input
                                 type="file"
                                 name="profile_photo"
+                                accept="image/*"
                                 class="hidden">
                         </label>
                     </div>
@@ -97,9 +98,7 @@
                 <div>
                     <label class="text-sm text-zinc-400">Bio</label>
                     <textarea name="bio" rows="3"
-                        class="w-full mt-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white">
-                            {{ old('bio',auth()->user()->bio) }}
-                        </textarea>
+                        class="w-full mt-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white">{{ old('bio', auth()->user()->bio) }}</textarea>
                 </div>
 
                 <!-- Interests -->
@@ -112,43 +111,80 @@
                             <input
                             type="checkbox"
                             name="interests[]"
-                            value="Food">
-                            Food
+                            value="Food"
+
+                            @checked(
+                                in_array(
+                                    'Food',
+                                    old('interests', auth()->user()->interests ?? [])
+                                ))
+                            > Food
                         </label>
                         <label>
                             <input
                             type="checkbox"
                             name="interests[]"
-                            value="Gaming">
+                            value="Gaming"
                             Gaming
+
+                            @checked(
+                                in_array(
+                                'Gaming',
+                                    old('interests', auth()->user()->interests ?? [])
+                                ))
+                            > Gaming
                         </label>
                         <label>
                             <input
                             type="checkbox"
                             name="interests[]"
-                            value="Technology">
-                            Technology
+                            value="Technology"
+
+                            @checked(
+                                in_array(
+                                'Technology',
+                                    old('interests', auth()->user()->interests ?? [])
+                                ))
+                            > Technology
                         </label>
                         <label>
                             <input
                             type="checkbox"
                             name="interests[]"
-                            value="Sports">
-                            Sports
+                            value="Sports"
+
+                            @checked(
+                                in_array(
+                                'Sports',
+                                    old('interests', auth()->user()->interests ?? [])
+                                ))
+                            > Sports
                         </label>
                         <label>
                             <input
                             type="checkbox"
                             name="interests[]"
-                            value="Travel">
-                            Travel
+                            value="Travel"
+
+                            @checked(
+                                in_array(
+                                'Travel',
+                                    old('interests', auth()->user()->interests ?? [])
+                                ))
+                            > Travel
                         </label>
                         <label>
                              <input
                             type="checkbox"
                             name="interests[]"
-                            value="Marketplace">
-                            Marketplace
+                            value="Marketplace"
+
+                            @checked(
+                                in_array(
+                                'Marketplace',
+                                    old('interests', auth()->user()->interests ?? [])
+                                ))
+                            > Marketplace
                         </label>
                     </div>
                 </div>
@@ -167,19 +203,44 @@
                     <h2 class="font-semibold text-white mb-4">
                         Privacy Settings
                     </h2>
+
                     <div class="space-y-3 text-sm">
+
                         <label class="flex items-center gap-3">
-                            <input type="checkbox" checked>
+                            <input
+                                type="checkbox"
+                                name="show_profile"
+                                value="1"
+                                @checked(auth()->user()->show_profile)
+                            >
+
                             Show my profile publicly
                         </label>
+
+
                         <label class="flex items-center gap-3">
-                            <input type="checkbox" checked>
+                            <input
+                                type="checkbox"
+                                name="allow_messages"
+                                value="1"
+                                @checked(auth()->user()->allow_messages)
+                            >
+
                             Allow others to message me
                         </label>
+
+
                         <label class="flex items-center gap-3">
-                            <input type="checkbox">
+                            <input
+                                type="checkbox"
+                                name="show_location"
+                                value="1"
+                                @checked(auth()->user()->show_location)
+                            >
+
                             Show my location
                         </label>
+
                     </div>
                 </div>
 
@@ -239,7 +300,7 @@
                         <span class="group-hover:-translate-x-1 transition-transform duration-300">
                             ←
                         </span>
-                        Main Page
+                        Homepage
                     </a>
 
                     <!-- Community Button -->

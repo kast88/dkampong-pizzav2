@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\BloggerController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OrderController;
@@ -59,7 +60,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/menu', [ProductController::class, 'index'])->name('products.index');
     Route::get('/menu/{product}', [ProductController::class, 'show'])->name('products.show');
-    Route::get('/community', function () {return view('community');})->name('community');
+    Route::get('/community', [CommunityController::class,'index'])->name('community');
 
 });
 
