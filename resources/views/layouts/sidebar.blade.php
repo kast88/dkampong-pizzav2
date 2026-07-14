@@ -73,8 +73,15 @@
                 {{ $pendingRequests }}
             </span>
         @endif
-
     </a>
+
+    @if(Auth::check() && Auth::user()->role === 'admin')
+        <a href=""
+        class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
+            <span>🚩</span>
+            <span>Manage Reports</span>
+        </a>
+    @endif
 
     @if(Auth::check() && Auth::user()->role === 'admin')
         <a href="{{ route('admin.products.index') }}"

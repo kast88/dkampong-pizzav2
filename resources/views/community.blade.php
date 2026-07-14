@@ -2,6 +2,19 @@
 
 @section('content')
 
+<style>
+/* Modal scrollbar */
+.modal-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+    background: #52525b;
+    border-radius: 10px;
+}
+
+</style>
+
 @php
     $user = auth()->user();
 @endphp
@@ -73,6 +86,11 @@
                     <p class="text-xs text-zinc-500">
                     {{auth()->user()->role ?? 'Guest'}}
                     </p>
+                    @if(auth()->user()->bio)
+                    <p class="text-sm text-zinc-400 mt-3">
+                        "{{ auth()->user()->bio }}"
+                    </p>
+                    @endif
                 </div>
                 <div class="mt-4 border-t border-zinc-800 pt-4 text-sm text-zinc-400">
                     <div>
@@ -82,7 +100,7 @@
                         ❤️ Reactions: 340
                     </div>
                     <div>
-                        🏆 Reputation: Gold Member
+                        💎 Reputation: Platinum Member
                     </div>
                 </div>
                 <a href="{{route('profile.edit')}}"
@@ -173,340 +191,436 @@
 
         <main class="col-span-12 lg:col-span-6 space-y-5">
 
-        <!-- CREATE POST BOX -->
+            <!-- CREATE POST BOX -->
 
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-            <div class="mb-10 text-center">
-                <h1 class="text-3xl font-bold">
-                    🏡 D'Kampung Community Corner
-                </h1>
-            </div>
-            <div class="flex gap-3 items-center mb-4">
-                <div class="w-11 h-11 rounded-full bg-orange-600 flex items-center justify-center overflow-hidden">
-                    @if($user && $user->profile_photo)
-                    <img src="{{ asset('storage/'.$user->profile_photo) }}"
-                    class="w-full h-full object-cover">
-                    @else
-                    👨‍🌾
-                    @endif
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+                <div class="mb-10 text-center">
+                    <h1 class="text-3xl font-bold">
+                        🏡 D'Kampung Community Corner
+                    </h1>
                 </div>
-                <span class="text-zinc-400">
-                    {{ $user ? $user->name : 'Guest' }},
-                    what's happening in the kampung today?
-                </span>
-            </div>
-            <select class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm mb-3">
-                <option>
-                    Select Category
-                </option>
-                @foreach($categories as $cat)
-                <option value="{{ $cat['name'] }}">
-                    {{ $cat['icon'] }} {{ $cat['name'] }}
-                </option>
-                @endforeach
-            </select>
-            <input class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 mb-3 text-sm"
-                placeholder="Post title...">
-            <textarea rows="3" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm"
-                placeholder="Share your thoughts with the kampung..."></textarea>
-            <div class="flex justify-between items-center mt-4">
-                <div class="flex gap-4 text-sm text-zinc-500">
-                    <button class="hover:text-orange-400">
-                        🖼️ Photo
-                    </button>
-                    <button class="hover:text-orange-400">
-                        📍 Location
-                    </button>
-                    <button class="hover:text-orange-400">
-                        😊 Feeling
-                    </button>
-                    <button class="hover:text-orange-400">
-                        📊 Poll
-                    </button>
-                    <button class="hover:text-orange-400">
-                        🎥 Live
-                    </button>
-                </div>
-                <button class="bg-orange-600 hover:bg-orange-700 px-5 py-2 rounded-xl text-sm font-semibold">
-                    Post
-                </button>
-            </div>
-        </div>
-
-        <!-- SEARCH + CATEGORIES -->
-
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <div class="relative">
-                <input type="text"
-                    placeholder="🔍 Search posts, users, topics..."
-                    class="w-full bg-zinc-950 border border-zinc-800 rounded-xl
-                    px-4 py-3 text-sm
-                    focus:outline-none focus:border-orange-500
-                    transition">
-            </div>
-            <div class="border-t border-zinc-800 my-6"></div>
-            <div>
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-sm font-semibold text-white">
-                        📂 Explore Categories
-                    </h2>
-                    <span class="text-xs text-zinc-500">
-                        {{ count($categories) }} Topics
+                <div class="flex gap-3 items-center mb-4">
+                    <div class="w-11 h-11 rounded-full bg-orange-600 flex items-center justify-center overflow-hidden">
+                        @if($user && $user->profile_photo)
+                        <img src="{{ asset('storage/'.$user->profile_photo) }}"
+                        class="w-full h-full object-cover">
+                        @else
+                        👨‍🌾
+                        @endif
+                    </div>
+                    <span class="text-zinc-400">
+                        {{ $user ? $user->name : 'Guest' }},
+                        what's happening in the kampung today?
                     </span>
                 </div>
-                <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-
-                    <!-- ALL -->
-
-                    <button
-                    class="category-btn whitespace-nowrap px-4 py-2 rounded-full
-                    bg-orange-600 text-white text-sm font-medium"
-                    data-category="ALL">
-
-                        🌎 All
-
-                    </button>
-
+                <select class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm mb-3">
+                    <option>
+                        Select Category
+                    </option>
                     @foreach($categories as $cat)
-
-                    <button
-                    class="category-btn whitespace-nowrap px-4 py-2 rounded-full
-                    bg-zinc-950 border border-zinc-800
-                    text-zinc-400 text-sm
-                    hover:text-orange-400 hover:border-orange-500 transition"
-                    data-category="{{ $cat['name'] }}">
-
-                        {{ $cat['icon'] }}
-                        {{ $cat['name'] }}
-
-                    </button>
-
+                    <option value="{{ $cat['name'] }}">
+                        {{ $cat['icon'] }} {{ $cat['name'] }}
+                    </option>
                     @endforeach
-
-                </div>
-            </div>
-        </div>
-        <div class="flex gap-3">
-            <button class="px-4 py-2 rounded-lg bg-orange-600 text-sm">
-                Newest
-            </button>
-            <button class="px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm">
-                Popular
-            </button>
-            <button class="px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm">
-                Trending
-            </button>
-        </div>
-
-        <!-- SAMPLE THREAD 1 -->
-
-        <article class="post-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
-            data-category="Food Talk">
-
-            <!-- USER HEADER -->
-
-            <div class="p-5 flex justify-between">
-                <div class="flex gap-3">
-                    <div class="w-11 h-11 rounded-full bg-orange-600 flex items-center justify-center">
-                        👨‍🌾
+                </select>
+                <input class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 mb-3 text-sm"
+                    placeholder="Post title...">
+                <textarea rows="3" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm"
+                    placeholder="Share your thoughts with the kampung..."></textarea>
+                    <div id="selectedPhoto"
+                    class="hidden mt-4">
+                        <img id="postImagePreview"
+                        class="rounded-xl max-h-60 w-full object-cover">
                     </div>
-                    <div>
-                        <h3 class="font-semibold">
-                            Ali Kampung
-                        <span
-                        class="text-xs bg-orange-600 px-2 py-1 rounded-full">
-                            Top Contributor
-                        </span>
-                        </h3>
-                        <p class="text-xs text-zinc-500">
-                            Food Talk 🍕 • 2 hours ago
-                        </p>
+                <div class="flex justify-between items-center mt-4">
+                    <div class="flex gap-4 text-sm text-zinc-500">
+                        <label for="photoUpload"
+                        class="hover:text-orange-400 cursor-pointer">
+                            🖼️ Photo
+                        </label>
+                        <input
+                        type="file"
+                        id="photoUpload"
+                        accept="image/*"
+                        class="hidden"
+                        onchange="openPhotoEditor(event)">
+                        <button class="hover:text-orange-400">
+                            📍 Location
+                        </button>
+                        <button class="hover:text-orange-400">
+                            😊 Feeling
+                        </button>
+                        <button class="hover:text-orange-400">
+                            📊 Poll
+                        </button>
+                        <button
+                        onclick="openModal('liveModal')"
+                        class="hover:text-orange-400">
+
+                        🎥 Live
+
+                        </button>
                     </div>
-                </div>
-                <button class="text-zinc-500">
-                    ⋮
-                </button>
-            </div>
-
-            <!-- POST CONTENT -->
-
-            <div class="px-5 pb-5">
-                <h2 class="text-xl font-bold">
-                    Best pizza place around kampung?
-                </h2>
-                <p class="text-zinc-300 mt-3">
-                    Tried a few places recently.
-                    Anyone got recommendation?
-                    Looking for something that tastes homemade 🍕🔥
-                </p>
-
-                <!-- fake image area -->
-
-                <div
-                    class="mt-4 h-48 rounded-xl bg-gradient-to-br from-orange-900/40 to-zinc-800 flex items-center justify-center text-6xl">
-                    🍕
-                </div>
-            </div>
-
-            <!-- POST ACTION -->
-
-            <div class="border-t border-zinc-800 px-5 py-3 flex justify-between text-sm text-zinc-400">
-                <button class="hover:text-orange-400">
-                    👍 <span>124</span> Likes
-                </button>
-
-                <button class="hover:text-orange-400">
-                    💬 <span>38</span> Comments
-                </button>
-                <button class="hover:text-orange-400">
-                    🔁 <span>14</span> Shares
-                </button>
-                <button class="hover:text-orange-400">
-                    🔖 Save
-                </button>
-                <button class="hover:text-orange-400">
-                    🚩 Report
-                </button>
-                👀 2.1k Views
-            </div>
-            <div class="border-t border-zinc-800 p-5">
-                <div class="text-sm">
-                    <p>
-                        <strong>Mak Cik Siti</strong>
-                        <span class="text-zinc-400">
-                            Sedap tu. Saya recommend Pizza Warung.
-                        </span>
-                    </p>
-                    <p class="mt-3">
-                        <strong>Gamer Pakcik</strong>
-                        <span class="text-zinc-400">
-                            Saya pun nak try.
-                        </span>
-                    </p>
-                    <button class="mt-3 text-orange-400 text-sm">
-                        View all 38 comments
+                    <button class="bg-orange-600 hover:bg-orange-700 px-5 py-2 rounded-xl text-sm font-semibold">
+                        Post
                     </button>
                 </div>
             </div>
-        </article>
 
-        <!-- SAMPLE THREAD 2 GAMING -->
+            <!-- SEARCH + CATEGORIES -->
 
-        <article class="post-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
-            data-category="Gaming">
-            <div class="p-5 flex gap-3">
-                <div class="w-11 h-11 rounded-full bg-purple-600 flex items-center justify-center">
-                    🎮
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                <div class="relative">
+                    <input type="text"
+                        placeholder="🔍 Search posts, users, topics..."
+                        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl
+                        px-4 py-3 text-sm
+                        focus:outline-none focus:border-orange-500
+                        transition">
                 </div>
+                <div class="border-t border-zinc-800 my-6"></div>
                 <div>
-                    <h3 class="font-semibold">
-                        Gamer Pakcik
-                    </h3>
-                    <p class="text-xs text-zinc-500">
-                        Gaming 🎮 • 5 hours ago
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="text-sm font-semibold text-white">
+                            📂 Explore Categories
+                        </h2>
+                        <span class="text-xs text-zinc-500">
+                            {{ count($categories) }} Topics
+                        </span>
+                    </div>
+                    <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+
+                        <!-- ALL -->
+
+                        <button
+                        class="category-btn whitespace-nowrap px-4 py-2 rounded-full
+                        bg-orange-600 text-white text-sm font-medium"
+                        data-category="ALL">
+
+                            🌎 All
+
+                        </button>
+
+                        @foreach($categories as $cat)
+
+                        <button
+                        class="category-btn whitespace-nowrap px-4 py-2 rounded-full
+                        bg-zinc-950 border border-zinc-800
+                        text-zinc-400 text-sm
+                        hover:text-orange-400 hover:border-orange-500 transition"
+                        data-category="{{ $cat['name'] }}">
+
+                            {{ $cat['icon'] }}
+                            {{ $cat['name'] }}
+
+                        </button>
+
+                        @endforeach
+
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button class="px-4 py-2 rounded-lg bg-orange-600 text-sm">
+                    Newest
+                </button>
+                <button class="px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm">
+                    Popular
+                </button>
+                <button class="px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm">
+                    Trending
+                </button>
+            </div>
+
+            <!-- SAMPLE THREAD 1 -->
+
+            <article class="post-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
+                data-category="Food Talk">
+
+                <!-- USER HEADER -->
+
+                <div class="p-5 flex justify-between items-start">
+
+                    <!-- Left -->
+                    <div class="flex gap-3">
+                        <div class="w-11 h-11 rounded-full bg-orange-600 flex items-center justify-center">
+                            👨‍🌾
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-semibold">Ali Kampung</h3>
+                                <span class="text-xs bg-orange-600 px-2 py-1 rounded-full">
+                                    Top Contributor
+                                </span>
+                            </div>
+                            <p class="text-xs text-zinc-500 mt-1">
+                                Food Talk 🍕 • 2 hours ago
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Right -->
+                    <div class="flex items-center gap-2">
+                        <button
+                            id="followBtn1"
+                            onclick="toggleFollow('followBtn1','followIcon1','followText1')"
+                            class="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition">
+
+                            <span id="followIcon1">+</span>
+                            <span id="followText1">Follow</span>
+
+                        </button>
+                        <button class="text-zinc-500 hover:text-white text-xl">
+                            ⋮
+                        </button>
+                    </div>
+                </div>
+
+                <!-- POST CONTENT -->
+
+                <div class="px-5 pb-5">
+                    <h2 class="text-xl font-bold">
+                        Best pizza place around kampung?
+                    </h2>
+                    <p class="text-zinc-300 mt-3">
+                        Tried a few places recently.
+                        Anyone got recommendation?
+                        Looking for something that tastes homemade 🍕🔥
+                    </p>
+
+                    <!-- fake image area -->
+
+                    <div
+                        class="mt-4 h-48 rounded-xl bg-gradient-to-br from-orange-900/40 to-zinc-800 flex items-center justify-center text-6xl">
+                        🍕
+                    </div>
+                </div>
+
+                <!-- POST ACTION -->
+
+                <div class="border-t border-zinc-800 px-5 py-3 flex justify-between text-sm text-zinc-400">
+                    <button class="hover:text-orange-400">
+                        👍 <span>124</span> Likes
+                    </button>
+
+                    <button class="hover:text-orange-400">
+                        💬 <span>38</span> Comments
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🔁 <span>14</span> Shares
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🔖 Save
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🚩 Report
+                    </button>
+                    👀 2.1k Views
+                </div>
+                <div class="border-t border-zinc-800 p-5">
+                    <div class="text-sm">
+                        <p>
+                            <strong>Mak Cik Siti</strong>
+                            <span class="text-zinc-400">
+                                Sedap tu. Saya recommend Pizza Warung.
+                            </span>
+                        </p>
+                        <p class="mt-3">
+                            <strong>Gamer Pakcik</strong>
+                            <span class="text-zinc-400">
+                                Saya pun nak try.
+                            </span>
+                        </p>
+                        <button class="mt-3 text-orange-400 text-sm">
+                            View all 38 comments
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SAMPLE THREAD 2 GAMING -->
+
+            <article class="post-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
+                data-category="Gaming">
+                <div class="p-5 flex justify-between items-start">
+
+                    <!-- Left -->
+                    <div class="flex gap-3">
+
+                        <div class="w-11 h-11 rounded-full bg-purple-600 flex items-center justify-center">
+                            🎮
+                        </div>
+
+                        <div>
+
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-semibold">Gamer Pakcik</h3>
+
+                                <span class="text-xs bg-purple-600 px-2 py-1 rounded-full">
+                                    Gamer
+                                </span>
+                            </div>
+
+                            <p class="text-xs text-zinc-500 mt-1">
+                                Gaming 🎮 • 5 hours ago
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Right -->
+                    <div class="flex items-center gap-2">
+
+                        <button
+                            id="followBtn2"
+                            onclick="toggleFollow('followBtn2','followIcon2','followText2')"
+                            class="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition">
+
+                            <span id="followIcon2">+</span>
+                            <span id="followText2">Follow</span>
+
+                        </button>
+
+                        <button class="text-zinc-500 hover:text-white text-xl">
+                            ⋮
+                        </button>
+
+                    </div>
+
+                </div>
+                <div class="px-5 pb-5">
+                    <h2 class="text-xl font-bold">
+                        Anyone still playing old school games?
+                    </h2>
+                    <p class="text-zinc-300 mt-3">
+                        Thinking to build a small gaming corner.
+                        What games should we bring back?
                     </p>
                 </div>
-            </div>
-            <div class="px-5 pb-5">
-                <h2 class="text-xl font-bold">
-                    Anyone still playing old school games?
-                </h2>
-                <p class="text-zinc-300 mt-3">
-                    Thinking to build a small gaming corner.
-                    What games should we bring back?
-                </p>
-            </div>
-            <div class="border-t border-zinc-800 px-5 py-3 flex justify-between text-sm text-zinc-400">
-                <button class="hover:text-orange-400">
-                    👍 <span>86</span> Likes
-                </button>
-                <button class="hover:text-orange-400">
-                    💬 <span>21</span> Comments
-                </button>
-                <button class="hover:text-orange-400">
-                    🔁 <span>10</span> Shares
-                </button>
-                <button class="hover:text-orange-400">
-                    🔖 Save
-                </button>
-                <button class="hover:text-orange-400">
-                    🚩 Report
-                </button>
-                👀 1.5k Views
-            </div>
-        </article>
-
-        <!-- POLL POST -->
-
-        <article class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-            <h2 class="text-xl font-bold">
-                🍛 Favourite Kampung Food?
-            </h2>
-            <div class="mt-4 space-y-2">
-            <label>
-            <input type="radio">
-                Nasi Lemak
-            </label>
-            <label>
-            <input type="radio">
-                Mee Kari
-            </label>
-            <label>
-            <input type="radio">
-                Pizza
-            </label>
-            </div>
-            <button class="mt-4 bg-orange-600 px-4 py-2 rounded-xl">
-                Vote
-            </button>
-        </article>
-
-        <!-- SAMPLE THREAD 3 -->
-
-        <article class="post-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
-            data-category="General Chat">
-            <div class="p-5 flex gap-3">
-                <div class="w-11 h-11 rounded-full bg-green-600 flex items-center justify-center">
-                    👩
+                <div class="border-t border-zinc-800 px-5 py-3 flex justify-between text-sm text-zinc-400">
+                    <button class="hover:text-orange-400">
+                        👍 <span>86</span> Likes
+                    </button>
+                    <button class="hover:text-orange-400">
+                        💬 <span>21</span> Comments
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🔁 <span>10</span> Shares
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🔖 Save
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🚩 Report
+                    </button>
+                    👀 1.5k Views
                 </div>
-                <div>
-                    <h3 class="font-semibold">
-                        Mak Cik Siti
-                    </h3>
-                    <p class="text-xs text-zinc-500">
-                        General Chat 💬 • Yesterday
+            </article>
+
+            <!-- POLL POST -->
+
+            <article class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+                <h2 class="text-xl font-bold">
+                    🍛 Favourite Kampung Food?
+                </h2>
+                <div class="mt-4 space-y-2">
+                <label>
+                <input type="radio">
+                    Nasi Lemak
+                </label>
+                <label>
+                <input type="radio">
+                    Mee Kari
+                </label>
+                <label>
+                <input type="radio">
+                    Pizza
+                </label>
+                </div>
+                <button class="mt-4 bg-orange-600 px-4 py-2 rounded-xl">
+                    Vote
+                </button>
+            </article>
+
+            <!-- SAMPLE THREAD 3 -->
+
+            <article class="post-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
+                data-category="General Chat">
+                <div class="p-5 flex justify-between items-start">
+
+                    <div class="flex gap-3">
+
+                        <div class="w-11 h-11 rounded-full bg-green-600 flex items-center justify-center">
+                            👩
+                        </div>
+
+                        <div>
+
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-semibold">Mak Cik Siti</h3>
+
+                                <span class="text-xs bg-green-600 px-2 py-1 rounded-full">
+                                    Community Helper
+                                </span>
+                            </div>
+
+                            <p class="text-xs text-zinc-500 mt-1">
+                                General Chat 💬 • Yesterday
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="flex items-center gap-2">
+
+                        <button
+                            id="followBtn3"
+                            onclick="toggleFollow('followBtn3','followIcon3','followText3')"
+                            class="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition">
+
+                            <span id="followIcon3">+</span>
+                            <span id="followText3">Follow</span>
+
+                        </button>
+
+                        <button class="text-zinc-500 hover:text-white text-xl">
+                            ⋮
+                        </button>
+
+                    </div>
+
+                </div>
+                <div class="px-5 pb-5">
+                    <h2 class="text-xl font-bold">
+                        Apa cerita kampung hari ni?
+                    </h2>
+                    <p class="text-zinc-300 mt-3">
+                        Lama tak borak dengan jiran-jiran.
+                        Share cerita menarik hari ni 😄
                     </p>
                 </div>
-            </div>
-            <div class="px-5 pb-5">
-                <h2 class="text-xl font-bold">
-                    Apa cerita kampung hari ni?
-                </h2>
-                <p class="text-zinc-300 mt-3">
-                    Lama tak borak dengan jiran-jiran.
-                    Share cerita menarik hari ni 😄
-                </p>
-            </div>
-            <div class="border-t border-zinc-800 px-5 py-3 flex justify-between text-sm text-zinc-400">
-                <button class="hover:text-orange-400">
-                    👍 <span>230</span> Likes
-                </button>
-                <button class="hover:text-orange-400">
-                    💬 <span>75</span> Comments
-                </button>
-                <button class="hover:text-orange-400">
-                    🔁 <span>24</span> Shares
-                </button>
-                <button class="hover:text-orange-400">
-                    🔖 Save
-                </button>
-                <button class="hover:text-orange-400">
-                    🚩 Report
-                </button>
-                👀 1.8k Views
-            </div>
+                <div class="border-t border-zinc-800 px-5 py-3 flex justify-between text-sm text-zinc-400">
+                    <button class="hover:text-orange-400">
+                        👍 <span>230</span> Likes
+                    </button>
+                    <button class="hover:text-orange-400">
+                        💬 <span>75</span> Comments
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🔁 <span>24</span> Shares
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🔖 Save
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🚩 Report
+                    </button>
+                    👀 1.8k Views
+                </div>
+            </article>
         </main>
-        </article>
 
         <!-- RIGHT SIDEBAR -->
 
@@ -668,11 +782,67 @@
         </aside>
     </div>
 
+    <!-- PHOTO EDITOR MODAL -->
+
+    <div id="photoEditor"
+    class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
+
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-lg">
+
+            <div class="flex justify-between items-center mb-4">
+
+                <h2 class="font-bold text-xl">
+                    🖼️ Edit Photo
+                </h2>
+
+                <button onclick="closePhotoEditor()">
+                    ✕
+                </button>
+
+            </div>
+
+            <!-- Preview -->
+
+            <div class="bg-black rounded-xl h-72 flex items-center justify-center overflow-hidden">
+
+                <img
+                id="previewImage"
+                class="max-h-full max-w-full rounded-lg transition">
+
+            </div>
+
+            <!-- Tools -->
+
+            <div class="grid grid-cols-2 gap-3 mt-5">
+                <button onclick="rotateImage()"
+                class="bg-zinc-800 py-2 rounded-lg">
+                    🔄 Rotate
+                </button>
+                <button onclick="resetFilter()"
+                class="bg-zinc-800 py-2 rounded-lg">
+                    ♻️ Reset
+                </button>
+                <button onclick="increaseBrightness()"
+                class="bg-zinc-800 py-2 rounded-lg">
+                    ☀️ Brightness
+                </button>
+                <button onclick="makeGray()"
+                class="bg-zinc-800 py-2 rounded-lg">
+                    ⚫ Black & White
+                </button>
+            </div>
+            <button onclick="applyPhoto()"
+            class="mt-5 w-full bg-orange-600 py-3 rounded-xl font-semibold">
+                Done ✓
+            </button>
+        </div>
+    </div>
+
     <!-- ABOUT MODAL -->
 
     <div id="aboutModal"
-    class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full relative">
+    class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5 overflow-y-auto">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full relative max-h-[85vh] overflow-y-auto modal-scroll">
             <button onclick="closeModal('aboutModal')"
             class="absolute top-4 right-4 text-zinc-400 hover:text-white">
                 ✕
@@ -701,6 +871,56 @@
                 <li>• Small Businesses</li>
                 <li>• Students</li>
             </ul>
+            <div class="border-t border-zinc-800 my-5"></div>
+
+            <h3 class="font-semibold">
+                🏅 Community Badge Rewards
+            </h3>
+
+            <p class="text-sm text-zinc-400 mt-2">
+                Active members can unlock badges and enjoy special discounts
+                from participating local businesses.
+            </p>
+
+            <div class="mt-4 space-y-3 text-sm">
+
+                <div class="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
+                    <span>
+                        💎 Platinum Member
+                    </span>
+                    <span class="text-orange-400 font-semibold">
+                        10% Discount
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
+                    <span>
+                        🥇 Gold Member
+                    </span>
+                    <span class="text-orange-400 font-semibold">
+                        7.5% Discount
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
+                    <span>
+                        🥈 Silver Member
+                    </span>
+                    <span class="text-orange-400 font-semibold">
+                        5% Discount
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
+                    <span>
+                        🥉 Bronze Member
+                    </span>
+                    <span class="text-orange-400 font-semibold">
+                        2.5% Discount
+                    </span>
+                </div>
+
+            </div>
             <div class="border-t border-zinc-800 my-5"></div>
             <div class="space-y-2 text-sm text-zinc-400">
                 <div>👥 12,800 Members</div>
@@ -803,6 +1023,75 @@
             <ul id="membersList" class="flex-1 h-96 overflow-y-auto divide-y divide-zinc-800"></ul>
         </div>
     </div>
+
+    <!-- LIVE SETUP MODAL -->
+
+    <div id="liveModal"
+    class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-lg">
+        <button onclick="closeModal('liveModal')"
+        class="float-right text-zinc-400">
+            ✕
+        </button>
+        <h2 class="font-bold text-xl mb-5">
+            🔴 Start Live Streaming
+        </h2>
+        <input
+        id="liveTitle"
+        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 mb-3"
+        placeholder="Live title...">
+        <select
+        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3">
+            <option>
+                Food Talk
+            </option>
+            <option>
+                Gaming
+            </option>
+            <option>
+                General Chat
+            </option>
+        </select>
+            <button
+            onclick="startLive()"
+            class="mt-5 w-full bg-red-600 py-3 rounded-xl">
+            🔴 Go Live
+            </button>
+        </div>
+    </div>
+
+    <div id="liveRoom"
+    class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
+        <div class="w-full max-w-3xl bg-zinc-900 rounded-2xl overflow-hidden">
+            <div class="p-4 flex justify-between">
+                <h2 class="font-bold">
+                🔴 LIVE NOW
+                </h2>
+                <button onclick="closeModal('liveRoom')">
+                    ✕
+                </button>
+            </div>
+            <div class="h-80 bg-black flex items-center justify-center text-7xl">
+                🎥
+            </div>
+            <div class="p-4">
+                <h3 id="streamTitle"
+                class="font-bold text-xl">
+                    </h3>
+                <p class="text-zinc-400">
+                    👀 234 viewers
+                </p>
+                <div class="mt-4 bg-zinc-800 rounded-xl p-3">
+                    💬 Ali:
+                    Sedap nampak tu!
+                    <br>
+                    💬 Gamer Pakcik:
+                    Share resepi!
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="border-t border-zinc-800 mt-10">
         <div class="max-w-7xl mx-auto py-6 text-center text-zinc-500 text-sm">
             © 2026 D'Kampung
@@ -1052,6 +1341,136 @@ function filterMembers(){
 }
 
 renderMembersList();
+
+function toggleFollow(btnId, iconId, textId){
+
+    const btn = document.getElementById(btnId);
+    const icon = document.getElementById(iconId);
+    const text = document.getElementById(textId);
+
+    const following = text.textContent === "Following";
+
+    if(following){
+
+        text.textContent = "Follow";
+        icon.textContent = "+";
+
+        btn.classList.remove(
+            "bg-zinc-200",
+            "hover:bg-zinc-300",
+            "text-zinc-800"
+        );
+
+        btn.classList.add(
+            "bg-blue-600",
+            "hover:bg-blue-700",
+            "text-white"
+        );
+    }else{
+        text.textContent = "Following";
+        icon.textContent = "✓";
+
+        btn.classList.remove(
+            "bg-blue-600",
+            "hover:bg-blue-700",
+            "text-white"
+        );
+
+        btn.classList.add(
+            "bg-zinc-200",
+            "hover:bg-zinc-300",
+            "text-zinc-800"
+        );
+    }
+}
+
+let currentImage = null;
+let rotation = 0;
+let brightness = 100;
+let grayscale = 0;
+
+
+function openPhotoEditor(event){
+    const file = event.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e){
+        currentImage = e.target.result;
+        const img = document.getElementById('previewImage');
+        img.src = currentImage;
+        resetFilter();
+        openModal('photoEditor');
+    }
+    reader.readAsDataURL(file);
+}
+
+function rotateImage(){
+    rotation += 90;
+    document.getElementById('previewImage')
+    .style.transform = `rotate(${rotation}deg)`;
+}
+
+function increaseBrightness(){
+    brightness += 20;
+    document.getElementById('previewImage')
+    .style.filter =
+    `brightness(${brightness}%)`;
+}
+
+function makeGray(){
+    grayscale = grayscale ? 0 : 100;
+    document.getElementById('previewImage')
+    .style.filter =
+    `grayscale(${grayscale}%)`;
+}
+
+function resetFilter(){
+    rotation = 0;
+    brightness = 100;
+    grayscale = 0;
+    const img=document.getElementById('previewImage');
+    img.style.transform="rotate(0deg)";
+    img.style.filter="none";
+}
+
+function applyPhoto(){
+    const editor =
+    document.getElementById('previewImage');
+    const post =
+    document.getElementById('postImagePreview');
+    post.src = editor.src;
+    document
+    .getElementById('selectedPhoto')
+    .classList.remove('hidden');
+    closePhotoEditor();
+}
+
+function closePhotoEditor(){
+    document
+    .getElementById('photoEditor')
+    .classList.add('hidden');
+}
+
+function startLive(){
+
+let title =
+document.getElementById('liveTitle').value;
+
+
+if(title.trim()==""){
+title="D'Kampung Live";
+}
+
+
+document.getElementById('streamTitle')
+.innerText = title;
+
+
+closeModal('liveModal');
+
+openModal('liveRoom');
+
+}
 
 </script>
 
