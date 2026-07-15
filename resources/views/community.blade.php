@@ -259,13 +259,8 @@ $notificationCount = 3;
                         <label for="photoUpload" class="hover:text-orange-400 cursor-pointer">
                             🖼️ Photo
                         </label>
-                        <input
-                        type="file"
-                        name="image"
-                        id="photoUpload"
-                        accept="image/*"
-                        class="hidden"
-                        onchange="openPhotoEditor(event)">
+                        <input type="file" name="image" id="photoUpload" accept="image/*" class="hidden"
+                            onchange="openPhotoEditor(event)">
                         <button class="hover:text-orange-400">
                             📍 Location
                         </button>
@@ -355,36 +350,58 @@ $notificationCount = 3;
 
             <article class="post-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
                 data-category="{{ $thread->category }}">
-
-                <div class="p-5 flex gap-3">
-
-                    <div class="w-11 h-11 rounded-full bg-orange-600 flex items-center justify-center overflow-hidden">
-
-                        @if($thread->user->profile_photo)
-
-                        <img src="{{ asset('storage/'.$thread->user->profile_photo) }}"
-                            class="w-full h-full object-cover">
-
-                        @else
-
-                        👨‍🌾
-
-                        @endif
-
+                <div class="p-5 flex justify-between items-start">
+                    <div class="flex gap-3">
+                        <div
+                            class="w-11 h-11 rounded-full bg-orange-600 flex items-center justify-center overflow-hidden">
+                            @if($thread->user->profile_photo)
+                            <img src="{{ asset('storage/'.$thread->user->profile_photo) }}"
+                                class="w-full h-full object-cover">
+                            @else
+                            👨‍🌾
+                            @endif
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">
+                                {{ $thread->user->name }}
+                            </h3>
+                            <p class="text-xs text-zinc-500">
+                                {{ $thread->category }}
+                                • {{ $thread->created_at->diffForHumans() }}
+                            </p>
+                        </div>
                     </div>
-
-
-                    <div>
-                        <h3 class="font-semibold">
-                            {{ $thread->user->name }}
-                        </h3>
-
-                        <p class="text-xs text-zinc-500">
-                            {{ $thread->category }}
-                            • {{ $thread->created_at->diffForHumans() }}
-                        </p>
+                    <div class="relative">
+                        <button onclick="toggleMenu({{ $thread->id }})" class="text-zinc-400 text-xl">
+                            ⋮
+                        </button>
+                        <div id="menu-{{ $thread->id }}"
+                            class="hidden absolute right-0 mt-2 bg-zinc-800 rounded-xl p-2 w-32 z-20">
+                            @if($thread->user_id == auth()->id())
+                            <button onclick="openEditModal(
+                                '{{ $thread->id }}',
+                                '{{ addslashes($thread->category) }}',
+                                '{{ addslashes($thread->title) }}',
+                                '{{ addslashes($thread->content) }}'
+                                )" class="block w-full text-left px-3 py-2 hover:bg-zinc-700 rounded-lg text-sm">
+                                ✏️ Edit
+                            </button>
+                            <form action="{{ route('threads.destroy',$thread->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button onclick="return confirm('Delete this post?')"
+                                    class="w-full text-left px-3 py-2 hover:bg-zinc-700 rounded-lg text-sm text-red-400">
+                                    🗑️ Delete
+                                </button>
+                            </form>
+                            @else
+                            <button onclick="openReportModal({{ $thread->id }})"
+                                class="block w-full text-left px-3 py-2 hover:bg-zinc-700 rounded-lg text-sm text-orange-400">
+                                🚩 Report
+                            </button>
+                            @endif
+                        </div>
                     </div>
-
                 </div>
 
                 <div class="px-5 pb-5">
@@ -393,32 +410,22 @@ $notificationCount = 3;
                         {{ $thread->title }}
                     </h2>
 
-
                     <p class="text-zinc-300 mt-3">
                         {{ $thread->content }}
                     </p>
 
-
                     @if($thread->image)
-
                     <img src="{{ asset('storage/'.$thread->image) }}" class="mt-4 rounded-xl w-full">
-
                     @endif
-
                 </div>
 
-
                 <div class="border-t border-zinc-800 px-5 py-3 text-sm text-zinc-400">
-
                     👍 0 Likes
                     &nbsp;&nbsp;
                     💬 0 Comments
                     &nbsp;&nbsp;
                     🔖 Save
-
                 </div>
-
-
             </article>
 
             @endforeach
@@ -1157,6 +1164,90 @@ $notificationCount = 3;
         </div>
     </div>
 
+    <!-- EDIT THREAD MODAL -->
+
+    <div id="editModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
+        <div class="bg-zinc-900 rounded-2xl p-6 w-full max-w-xl">
+            <div class="flex justify-between mb-5">
+                <h2 class="text-xl font-bold">
+                    ✏️ Edit Thread
+                </h2>
+                <button onclick="closeModal('editModal')">
+                    ✕
+                </button>
+            </div>
+            <form id="editForm" method="POST">
+                @csrf
+                @method('PUT')
+                <select id="editCategory" name="category"
+                    class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 mb-3">
+                    @foreach($categories as $cat)
+                    <option value="{{ $cat['name'] }}">
+                        {{ $cat['icon'] }}
+                        {{ $cat['name'] }}
+                    </option>
+                    @endforeach
+                </select>
+                <input id="editTitle" name="title"
+                    class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 mb-3">
+                <textarea id="editContent" name="content" rows="5"
+                    class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3"></textarea>
+                <button class="mt-5 w-full bg-orange-600 py-3 rounded-xl">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- REPORT MODAL -->
+
+    <div id="reportModal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-xl font-bold">
+                    🚩 Report Thread
+                </h2>
+                <button onclick="closeModal('reportModal')">
+                    ✕
+                </button>
+            </div>
+
+            <form id="reportForm" method="POST">
+                @csrf
+                <h3 class="text-sm text-zinc-400 mb-3">
+                    Why are you reporting this?
+                </h3>
+                <div class="space-y-3">
+                    <label class="flex gap-3 items-center">
+                        <input type="radio" name="reason" value="Spam" required>
+                        Spam
+                    </label>
+                    <label class="flex gap-3 items-center">
+                        <input type="radio" name="reason" value="Scam">
+                        Scam
+                    </label>
+                    <label class="flex gap-3 items-center">
+                        <input type="radio" name="reason" value="Harassment">
+                        Harassment
+                    </label>
+                    <label class="flex gap-3 items-center">
+                        <input type="radio" name="reason" value="Fake Information">
+                        Fake Information
+                    </label>
+                    <label class="flex gap-3 items-center">
+                        <input type="radio" name="reason" value="Other">
+                        Other
+                    </label>
+                </div>
+                <textarea name="details" rows="4" placeholder="Additional details (optional)..."
+                    class="mt-5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm"></textarea>
+                <button class="mt-5 w-full bg-orange-600 hover:bg-orange-700 py-3 rounded-xl font-semibold">
+                    Submit Report
+                </button>
+            </form>
+        </div>
+    </div>
+
     <footer class="border-t border-zinc-800 mt-10">
         <div class="max-w-7xl mx-auto py-6 text-center text-zinc-500 text-sm">
             © 2026 D'Kampung
@@ -1594,7 +1685,32 @@ function previewUpload(event){
     document
     .getElementById('selectedPhoto')
     .classList.remove('hidden');
+}
 
+function toggleMenu(id){
+    document
+    .getElementById('menu-'+id)
+    .classList.toggle('hidden');
+}
+
+function openEditModal(id, category, title, content){
+    document.getElementById('editForm').action =
+        '/threads/' + id;
+    document.getElementById('editCategory').value =
+        category;
+    document.getElementById('editTitle').value =
+        title;
+    document.getElementById('editContent').value =
+        content;
+    openModal('editModal');
+}
+
+function openReportModal(id)
+{
+    document.getElementById('reportForm').action =
+        '/threads/' + id + '/report';
+
+    openModal('reportModal');
 }
 
 </script>

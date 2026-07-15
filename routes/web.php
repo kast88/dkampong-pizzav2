@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\BloggerController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CommunityController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedditController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ThreadController;
+use App\Http\Controllers\ThreadReportController;
 use App\Http\Controllers\YouTubeController;
 use Illuminate\Support\Facades\Route;
 
@@ -64,6 +66,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/community', [CommunityController::class,'index'])->name('community');
     Route::post('/threads', [ThreadController::class,'store'])->middleware('auth')->name('threads.store');
+    Route::get('/threads/{thread}/edit', [ThreadController::class,'edit'])->name('threads.edit');
+    Route::put('/threads/{thread}', [ThreadController::class,'update'])->name('threads.update');
+    Route::delete('/threads/{thread}', [ThreadController::class,'destroy'])->name('threads.destroy');
+    Route::post('/threads/{thread}/report', [ThreadReportController::class,'store'])->name('threads.report');
+    Route::get('/admin/reports', [AdminReportController::class,'index'])->name('admin.reports.index');
+    Route::delete('/admin/reports/thread/{thread}', [AdminReportController::class,'deleteThread'])->name('admin.reports.deleteThread');
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
