@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\BloggerController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\LoginController;
@@ -15,7 +16,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedditController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ThreadController;
+use App\Http\Controllers\ThreadLikeController;
 use App\Http\Controllers\ThreadReportController;
+use App\Http\Controllers\ThreadShareController;
 use App\Http\Controllers\YouTubeController;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +75,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/threads/{thread}/report', [ThreadReportController::class,'store'])->name('threads.report');
     Route::get('/admin/reports', [AdminReportController::class,'index'])->name('admin.reports.index');
     Route::delete('/admin/reports/thread/{thread}', [AdminReportController::class,'deleteThread'])->name('admin.reports.deleteThread');
+    Route::patch('/admin/reports/{report}/dismiss', [AdminReportController::class,'dismiss'])->name('admin.reports.dismiss');
+    Route::post('/threads/{thread}/like', [ThreadLikeController::class, 'toggle'])->name('threads.like');
+    Route::post('/threads/{thread}/comment', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    Route::post('/threads/{thread}/share', [ThreadShareController::class, 'store'])->name('threads.share');
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {

@@ -75,11 +75,24 @@
         @endif
     </a>
 
+    @php
+        $pendingReports = \App\Models\ThreadReport::where('status','pending')->count();
+    @endphp
     @if(Auth::check() && Auth::user()->role === 'admin')
         <a href="{{ route('admin.reports.index') }}"
-        class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
-            <span>🚩</span>
-            <span>Manage Reports</span>
+        class="flex items-center justify-between gap-3 rounded-xl px-4 py-3 font-medium text-white hover:bg-white/5">
+
+            <span class="flex items-center gap-3">
+                <span>🚩</span>
+                <span>Manage Reports</span>
+            </span>
+
+            @if($pendingReports > 0)
+                <span class="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">
+                    {{ $pendingReports }}
+                </span>
+            @endif
+
         </a>
     @endif
 

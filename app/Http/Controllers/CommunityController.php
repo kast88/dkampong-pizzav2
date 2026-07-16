@@ -14,9 +14,14 @@ class CommunityController extends Controller
             ->latest()
             ->get();
 
-        $threads = Thread::with('user')
-            ->latest()
-            ->get();
+        $threads = Thread::with([
+            'user',
+            'likes',
+            'comments.user',
+            'shares'
+        ])
+        ->latest()
+        ->get();
 
         return view('community', compact('users', 'threads'));
     }

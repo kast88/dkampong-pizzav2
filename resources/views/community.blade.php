@@ -261,26 +261,22 @@ $notificationCount = 3;
                         </label>
                         <input type="file" name="image" id="photoUpload" accept="image/*" class="hidden"
                             onchange="openPhotoEditor(event)">
-                        <button class="hover:text-orange-400">
+                        <button type="button" class="hover:text-orange-400">
                             📍 Location
                         </button>
-                        <button class="hover:text-orange-400">
+                        <button type="button" class="hover:text-orange-400">
                             😊 Feeling
                         </button>
-                        <button class="hover:text-orange-400">
+                        <button type="button" class="hover:text-orange-400">
                             📊 Poll
                         </button>
-                        <button onclick="openModal('liveModal')" class="hover:text-orange-400">
-
+                        <button type="button" onclick="openModal('liveModal')" class="hover:text-orange-400">
                             🎥 Live
-
                         </button>
                     </div>
                     <button type="submit"
                         class="bg-orange-600 hover:bg-orange-700 px-5 py-2 rounded-xl text-sm font-semibold">
-
                         Post
-
                     </button>
                 </div>
             </form>
@@ -403,28 +399,75 @@ $notificationCount = 3;
                         </div>
                     </div>
                 </div>
-
                 <div class="px-5 pb-5">
-
                     <h2 class="text-xl font-bold">
                         {{ $thread->title }}
                     </h2>
-
                     <p class="text-zinc-300 mt-3">
                         {{ $thread->content }}
                     </p>
-
                     @if($thread->image)
                     <img src="{{ asset('storage/'.$thread->image) }}" class="mt-4 rounded-xl w-full">
                     @endif
                 </div>
-
-                <div class="border-t border-zinc-800 px-5 py-3 text-sm text-zinc-400">
-                    👍 0 Likes
-                    &nbsp;&nbsp;
-                    💬 0 Comments
-                    &nbsp;&nbsp;
-                    🔖 Save
+                <div class="border-t border-zinc-800 px-5 py-3 flex justify-between text-sm text-zinc-400">
+                    <form action="{{route('threads.like',$thread->id)}}" method="POST">
+                        @csrf
+                        <button class="hover:text-orange-400">
+                            👍 {{ $thread->likes->count() }} Likes
+                        </button>
+                    </form>
+                    <button onclick="openComment({{ $thread->id }})" class="hover:text-orange-400">
+                        💬
+                        {{ $thread->comments->count() }}
+                        Comments
+                    </button>
+                    <button
+                        type="button"
+                        onclick="openShareModal('{{ url('/threads/'.$thread->id) }}')"
+                        class="hover:text-orange-400">
+                            🔁
+                            {{ $thread->shares->count() }}
+                            Shares
+                    </button>
+                    <button class="hover:text-orange-400">
+                        🔖 Save
+                    </button>
+                </div>
+                <div class="border-t border-zinc-800 p-5">
+                    <form action="{{ route('comments.store',$thread->id) }}" method="POST">
+                        @csrf
+                        <div class="flex gap-3">
+                            <input name="content" placeholder="Write a comment..."
+                                class="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-sm">
+                            <button class="bg-orange-600 px-4 rounded-xl">
+                                Send
+                            </button>
+                        </div>
+                    </form>
+                    <div class="mt-5 space-y-3">
+                        @foreach($thread->comments as $comment)
+                        <div class="bg-zinc-800 rounded-xl p-3">
+                            <div class="flex justify-between">
+                                <strong>
+                                    {{ $comment->user->name }}
+                                </strong>
+                                @if($comment->user_id == auth()->id())
+                                <form action="{{route('comments.destroy',$comment->id)}}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-red-400 text-xs">
+                                        Delete
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
+                            <p class="text-zinc-300 text-sm mt-1">
+                                {{ $comment->comment }}
+                            </p>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
             </article>
 
@@ -509,10 +552,7 @@ $notificationCount = 3;
                     <button class="hover:text-orange-400">
                         🔖 Save
                     </button>
-                    <button class="hover:text-orange-400">
-                        🚩 Report
-                    </button>
-                    👀 2.1k Views
+                    {{-- 👀 2.1k Views --}}
                 </div>
                 <div class="border-t border-zinc-800 p-5">
                     <div class="text-sm">
@@ -606,10 +646,7 @@ $notificationCount = 3;
                     <button class="hover:text-orange-400">
                         🔖 Save
                     </button>
-                    <button class="hover:text-orange-400">
-                        🚩 Report
-                    </button>
-                    👀 1.5k Views
+                    {{-- 👀 1.5k Views --}}
                 </div>
             </article>
 
@@ -707,10 +744,7 @@ $notificationCount = 3;
                     <button class="hover:text-orange-400">
                         🔖 Save
                     </button>
-                    <button class="hover:text-orange-400">
-                        🚩 Report
-                    </button>
-                    👀 1.8k Views
+                    {{-- 👀 1.8k Views --}}
                 </div>
             </article>
         </main>
@@ -922,6 +956,39 @@ $notificationCount = 3;
         </div>
     </div>
 
+    <!-- SHARE MODAL -->
+    <div id="shareModal"
+    class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-80">
+            <div class="flex justify-between mb-5">
+                <h2 class="font-bold text-lg">
+                    🔁 Share Thread
+                </h2>
+                <button onclick="closeShareModal()">
+                    ✕
+                </button>
+            </div>
+            <div class="space-y-3">
+                <button onclick="shareFacebook()"
+                class="w-full bg-blue-600 py-3 rounded-xl">
+                    🔵 Facebook
+                </button>
+                <button onclick="shareWhatsapp()"
+                class="w-full bg-green-600 py-3 rounded-xl">
+                    🟢 WhatsApp
+                </button>
+                <button onclick="copyShareLink()"
+                class="w-full bg-zinc-700 py-3 rounded-xl">
+                    📋 Copy Link
+                </button>
+                <button onclick="nativeShare()"
+                class="w-full bg-orange-600 py-3 rounded-xl">
+                    📱 More...
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ABOUT MODAL -->
 
     <div id="aboutModal"
@@ -1128,7 +1195,7 @@ $notificationCount = 3;
                     General Chat
                 </option>
             </select>
-            <button onclick="startLive()" class="mt-5 w-full bg-red-600 py-3 rounded-xl">
+            <button type="button" onclick="startLive()" class="mt-5 w-full bg-red-600 py-3 rounded-xl">
                 🔴 Go Live
             </button>
         </div>
@@ -1711,6 +1778,60 @@ function openReportModal(id)
         '/threads/' + id + '/report';
 
     openModal('reportModal');
+}
+
+let shareURL = "";
+
+function openShareModal(url){
+    shareURL = url;
+    document
+    .getElementById('shareModal')
+    .classList.remove('hidden');
+}
+
+function closeShareModal(){
+    document
+    .getElementById('shareModal')
+    .classList.add('hidden');
+}
+
+function shareFacebook(){
+    const link =
+    "https://www.facebook.com/sharer/sharer.php?u="
+    + encodeURIComponent(shareURL);
+    window.open(
+        link,
+        "_blank",
+        "width=600,height=500"
+    );
+}
+
+function shareWhatsapp(){
+    const text =
+    "Jom tengok thread D'Kampung 🍕\n"
+    + shareURL;
+    window.open(
+        "https://wa.me/?text="
+        + encodeURIComponent(text),
+        "_blank"
+    );
+}
+
+function copyShareLink(){
+    navigator.clipboard.writeText(shareURL);
+    alert("Link berjaya disalin 📋");
+}
+
+function nativeShare(){
+    if(navigator.share){
+        navigator.share({
+            title:"D'Kampung Community",
+            text:"Jom tengok thread ni 🍕",
+            url:shareURL
+        });
+    }else{
+        copyShareLink();
+    }
 }
 
 </script>
