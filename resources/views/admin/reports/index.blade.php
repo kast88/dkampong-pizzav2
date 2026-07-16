@@ -57,9 +57,9 @@
                             @if($report->status == 'pending')
                                 bg-yellow-500/20 text-yellow-300
                             @elseif($report->status == 'resolved')
-                                bg-green-500/20 text-green-300
-                            @else
                                 bg-red-500/20 text-red-300
+                            @else
+                                bg-green-500/20 text-green-300
                             @endif
                         ">
                             {{ ucfirst($report->status) }}
@@ -87,18 +87,32 @@
                         {{ $report->details }}
                     </p>
                     @endif
-                    <div class="mt-5 flex gap-3">
-                        <form method="POST"
-                            action="{{ route('admin.reports.deleteThread',$report->thread->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button
-                            onclick="return confirm('Soft delete this thread?')"
-                            class="px-4 py-2 rounded-xl bg-red-500/20 text-red-300 text-sm">
-                                🗑 Delete Thread
-                            </button>
-                        </form>
-                    </div>
+                <div class="mt-5 flex gap-3">
+
+                    <!-- KEEP THREAD -->
+                    <form method="POST"
+                        action="{{ route('admin.reports.dismiss',$report->id) }}">
+                        @csrf
+                        @method('PATCH')
+                        <button
+                        onclick="return confirm('Keep this thread?')"
+                        class="px-4 py-2 rounded-xl bg-green-500/20 text-green-300 text-sm">
+                            ✅ Keep Thread
+                        </button>
+                    </form>
+
+                    <!-- DELETE THREAD -->
+                    <form method="POST"
+                        action="{{ route('admin.reports.deleteThread',$report->thread_id) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button
+                        onclick="return confirm('Delete this thread?')"
+                        class="px-4 py-2 rounded-xl bg-red-500/20 text-red-300 text-sm">
+                            🗑 Delete Thread
+                        </button>
+                    </form>
+                </div>
                 </div>
                 @empty
                 <div class="text-center text-zinc-500 py-10">

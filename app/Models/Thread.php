@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -26,5 +27,20 @@ class Thread extends Model
     public function reports()
     {
         return $this->hasMany(ThreadReport::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(ThreadLike::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function shares()
+    {
+        return $this->hasMany(ThreadShare::class);
     }
 }
