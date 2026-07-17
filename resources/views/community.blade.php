@@ -133,6 +133,15 @@ $notificationCount = 3;
                         📰
                         <span>Home Feed</span>
                     </li>
+                    @auth
+                        @if(auth()->user()->role === 'admin')
+                            <a href="{{ route('dashboard') }}"
+                                class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
+                                📊
+                                <span>Dashboard</span>
+                            </a>
+                        @endif
+                    @endauth
                     <a href="{{ route('landing') }}"
                         class="hover:text-orange-400 cursor-pointer flex items-center gap-3 transition">
                         🏡
@@ -367,35 +376,53 @@ $notificationCount = 3;
                             </p>
                         </div>
                     </div>
-                    <div class="relative">
-                        <button onclick="toggleMenu({{ $thread->id }})" class="text-zinc-400 text-xl">
-                            ⋮
-                        </button>
-                        <div id="menu-{{ $thread->id }}"
-                            class="hidden absolute right-0 mt-2 bg-zinc-800 rounded-xl p-2 w-32 z-20">
-                            @if($thread->user_id == auth()->id())
-                            <button onclick="openEditModal(
-                                '{{ $thread->id }}',
-                                '{{ addslashes($thread->category) }}',
-                                '{{ addslashes($thread->title) }}',
-                                '{{ addslashes($thread->content) }}'
-                                )" class="block w-full text-left px-3 py-2 hover:bg-zinc-700 rounded-lg text-sm">
-                                ✏️ Edit
+                    <div class="flex items-center gap-2">
+                        @if($thread->user_id != auth()->id())
+                            <button id="followBtn{{ $thread->id }}"
+                                onclick="toggleFollow(
+                                    'followBtn{{ $thread->id }}',
+                                    'followIcon{{ $thread->id }}',
+                                    'followText{{ $thread->id }}'
+                                )"
+                                class="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition">
+
+                                <span id="followIcon{{ $thread->id }}">+</span>
+                                <span id="followText{{ $thread->id }}">Follow</span>
+
                             </button>
-                            <form action="{{ route('threads.destroy',$thread->id) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button onclick="return confirm('Delete this post?')"
-                                    class="w-full text-left px-3 py-2 hover:bg-zinc-700 rounded-lg text-sm text-red-400">
-                                    🗑️ Delete
-                                </button>
-                            </form>
-                            @else
-                            <button onclick="openReportModal({{ $thread->id }})"
-                                class="block w-full text-left px-3 py-2 hover:bg-zinc-700 rounded-lg text-sm text-orange-400">
-                                🚩 Report
+                        @endif
+                        <div class="relative">
+                            <button onclick="toggleMenu({{ $thread->id }})"
+                                class="text-zinc-400 hover:text-white text-xl">
+                                ⋮
                             </button>
-                            @endif
+                            <div id="menu-{{ $thread->id }}"
+                                class="hidden absolute right-0 mt-2 bg-zinc-800 rounded-xl p-2 w-32 z-20">
+                                @if($thread->user_id == auth()->id())
+                                    <button onclick="openEditModal(
+                                        '{{ $thread->id }}',
+                                        '{{ addslashes($thread->category) }}',
+                                        '{{ addslashes($thread->title) }}',
+                                        '{{ addslashes($thread->content) }}'
+                                    )"
+                                    class="block w-full text-left px-3 py-2 hover:bg-zinc-700 rounded-lg text-sm">
+                                        ✏️ Edit
+                                    </button>
+                                    <form action="{{ route('threads.destroy',$thread->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button onclick="return confirm('Delete this post?')"
+                                            class="w-full text-left px-3 py-2 hover:bg-zinc-700 rounded-lg text-sm text-red-400">
+                                            🗑️ Delete
+                                        </button>
+                                    </form>
+                                @else
+                                    <button onclick="openReportModal({{ $thread->id }})"
+                                        class="block w-full text-left px-3 py-2 hover:bg-zinc_700 rounded-lg text-sm text-orange-400">
+                                        🚩 Report
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
