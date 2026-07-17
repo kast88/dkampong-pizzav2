@@ -11,7 +11,11 @@ class ProfileController extends Controller
 {
     public function edit()
     {
-        return view('profile.edit');
+        $user = auth()->user();
+
+        $badge = $user->badges()->latest()->first();
+
+        return view('profile.edit', compact('badge'));
     }
 
     public function update(Request $request)

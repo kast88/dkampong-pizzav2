@@ -88,9 +88,12 @@ $notificationCount = 3;
                     <h3 class="font-bold mt-3">
                         {{auth()->user()->name ?? 'Guest'}}
                     </h3>
-                    <p class="text-xs text-zinc-500">
-                        {{auth()->user()->role ?? 'Guest'}}
-                    </p>
+                    <div class="text-xs text-zinc-500">
+                        @foreach(auth()->user()->badges as $badge)
+                        {{ $badge->icon }}
+                        {{ $badge->name }}
+                        @endforeach
+                    </div>
                 </div>
                 <div class="mt-4 border-t border-zinc-800 pt-4 text-sm text-zinc-400">
                     @if(auth()->user()->show_profile)
@@ -114,9 +117,6 @@ $notificationCount = 3;
                     </div>
                     <div>
                         ❤️ Reactions: 340
-                    </div>
-                    <div>
-                        💎 Platinum Member
                     </div>
                 </div>
                 <a href="{{route('profile.edit')}}"
@@ -1064,16 +1064,7 @@ $notificationCount = 3;
 
                 <div class="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
                     <span>
-                        💎 Platinum Member
-                    </span>
-                    <span class="text-orange-400 font-semibold">
-                        10% Discount
-                    </span>
-                </div>
-
-                <div class="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
-                    <span>
-                        🥇 Gold Member
+                        ⭐ Orang Lama
                     </span>
                     <span class="text-orange-400 font-semibold">
                         7.5% Discount
@@ -1082,7 +1073,7 @@ $notificationCount = 3;
 
                 <div class="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
                     <span>
-                        🥈 Silver Member
+                        🏡 Anak Kampung
                     </span>
                     <span class="text-orange-400 font-semibold">
                         5% Discount
@@ -1091,7 +1082,7 @@ $notificationCount = 3;
 
                 <div class="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
                     <span>
-                        🥉 Bronze Member
+                        🌱 Penduduk Baru
                     </span>
                     <span class="text-orange-400 font-semibold">
                         2.5% Discount

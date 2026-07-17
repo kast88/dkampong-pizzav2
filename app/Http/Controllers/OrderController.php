@@ -31,7 +31,19 @@ class OrderController extends Controller
         $items = $cart->items()->with('product')->get();
         $total = $items->sum(fn($item) => $item->product->price * $item->quantity);
 
-        return view('orders.checkout', compact('items', 'total'));
+        $badge = $user->badges()->latest()->first();
+        $discount = $badge?->discount ?? 0;
+        $discountAmount = ($total * $discount) / 100;
+        $finalTotal = $total - $discountAmount;
+
+        return view('orders.checkout', compact(
+            'items',
+            'total',
+            'badge',
+            'discount',
+            'discountAmount',
+            'finalTotal'
+        ));
     }
 
     public function store(Request $request)
@@ -52,10 +64,15 @@ class OrderController extends Controller
         $items = $cart->items()->with('product')->get();
         $total = $items->sum(fn($item) => $item->product->price * $item->quantity);
 
+        $badge = $user->badges()->latest()->first();
+        $discount = $badge?->discount ?? 0;
+        $discountAmount = ($total * $discount) / 100;
+        $finalTotal = $total - $discountAmount;
+
         $order = Order::create([
             'user_id' => $user->id,
             'status' => 'pending',
-            'total_price' => $total,
+            'total_price' => $finalTotal,
             'payment_method' => $validated['payment_method'],
             'delivery_address' => $validated['delivery_address'],
         ]);

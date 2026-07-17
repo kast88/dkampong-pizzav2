@@ -269,7 +269,8 @@
 
                         <div>
                             <p class="text-2xl font-bold">
-                                💎 Platinum
+                                {{ $badge->icon }}
+                                {{ $badge->name }}
                             </p>
                             <p class="text-zinc-500 text-sm">
                                 Member

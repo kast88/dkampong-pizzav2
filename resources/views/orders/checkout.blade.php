@@ -44,7 +44,7 @@
                     </div>
 
                     <button type="submit" class="w-full px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-lg hover:opacity-90 transition">
-                        Place Order — RM {{ number_format($total, 0) }}
+                        Place Order — RM {{ number_format($finalTotal,2) }}
                     </button>
                 </form>
             </div>
@@ -60,9 +60,39 @@
                             </div>
                         @endforeach
                     </div>
-                    <div class="border-t border-zinc-800 pt-3 flex justify-between font-bold">
-                        <span class="text-white">Total</span>
-                        <span class="text-orange-400">RM {{ number_format($total, 0) }}</span>
+                    <div class="border-t border-zinc-800 pt-3 space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-zinc-300">
+                                Subtotal
+                            </span>
+                            <span class="text-white">
+                                RM {{ number_format($total,2) }}
+                            </span>
+                        </div>
+
+                        @if($badge)
+
+                        <div class="flex justify-between text-green-400">
+                            <span>
+                                {{ $badge->icon }}
+                                {{ $badge->name }}
+                                ({{ $discount }}%)
+                            </span>
+                            <span>
+                                -RM {{ number_format($discountAmount,2) }}
+                            </span>
+                        </div>
+
+                        @endif
+
+                        <div class="border-t border-zinc-700 pt-2 flex justify-between font-bold text-lg">
+                            <span class="text-white">
+                                Total
+                            </span>
+                            <span class="text-orange-400">
+                                RM {{ number_format($finalTotal,2) }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
