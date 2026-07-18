@@ -14,44 +14,44 @@ class UserBadgeSeeder extends Seeder
      */
     public function run(): void
     {
-        Badge::truncate();
-
         $badges = [
-                [
-                    'name'=>'Penduduk Baru',
-                    'icon'=>'🌱',
-                    'discount'=>2.5
-                ],
+            [
+                'name'=>'Penduduk Baru',
+                'icon'=>'🌱',
+                'discount'=>2.5
+            ],
+            [
+                'name'=>'Anak Kampung',
+                'icon'=>'🏡',
+                'discount'=>5
+            ],
+            [
+                'name'=>'Orang Lama',
+                'icon'=>'⭐',
+                'discount'=>7.5
+            ],
+            [
+                'name'=>'Ketua Kampung',
+                'icon'=>'👑',
+                'discount'=>10
+            ],
+        ];
 
-                [
-                    'name'=>'Anak Kampung',
-                    'icon'=>'🏡',
-                    'discount'=>5
-                ],
+        foreach($badges as $badge){
+            Badge::updateOrCreate(
+                ['name' => $badge['name']],
+                $badge
+            );
+        }
 
-                [
-                    'name'=>'Orang Lama',
-                    'icon'=>'⭐',
-                    'discount'=>7.5
-                ],
+        $user = User::find(2);
 
-                [
-                    'name'=>'Ketua Kampung',
-                    'icon'=>'👑',
-                    'discount'=>10
-                ],
-
-            ];
-
-            foreach($badges as $badge){
-
-                Badge::create($badge);
-
-            }
-
-            // contoh assign
-            $user = User::find(2);
+        if ($user) {
             $badge = Badge::where('name','Orang Lama')->first();
-            $user->badges()->attach($badge->id);
+
+            if ($badge) {
+                $user->badges()->syncWithoutDetaching([$badge->id]);
             }
+        }
+    }
 }
